@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ProposalIQ – AI-Powered Proposal Intelligence</title>
+<meta name="description" content="ProposalIQ helps freelancers write winning proposals with AI-powered intelligence, reply scoring, scam detection and more."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CL1K3Y468J"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-CL1K3Y468J');
+</script>
+</head>
+<body>
+
+<!-- ============================
+     AUTH OVERLAY
+     ============================ -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="auth-logo-icon">IQ</div>
+      <span class="auth-logo-text">ProposalIQ</span>
+    </div>
+    <h1 class="auth-tagline">Write Proposals<br/>That <span class="gradient-text">Get Replies</span></h1>
+    <p class="auth-subtitle">AI-powered proposal intelligence for freelancers worldwide.</p>
+    <div class="auth-features">
+      <div class="auth-feature"><span class="af-icon">💬</span><span>Reply chance score for every job</span></div>
+      <div class="auth-feature"><span class="af-icon">🛡️</span><span>Scam & ghosting risk detection</span></div>
+      <div class="auth-feature"><span class="af-icon">✨</span><span>AI-generated tailored proposals</span></div>
+      <div class="auth-feature"><span class="af-icon">🧠</span><span>Client personality analysis</span></div>
+    </div>
+    <div class="auth-social-proof">
+      <div class="auth-avatars">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=a1" alt=""/>
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=b2" alt=""/>
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=c3" alt=""/>
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=d4" alt=""/>
+      </div>
+      <span>Trusted by <strong>12,000+</strong> freelancers worldwide</span>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-card glass-card">
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin">Sign In</button>
+        <button class="auth-tab" id="tabSignup">Create Account</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form class="auth-form" id="loginForm" autocomplete="on">
+        <div class="auth-error" id="loginError" style="display:none;"></div>
+
+        <button type="button" class="google-btn" id="googleLoginBtn">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+
+        <div class="auth-divider"><span>or sign in with email</span></div>
+
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <input type="email" id="loginEmail" class="auth-input" placeholder="you@example.com" required autocomplete="email"/>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <div class="auth-pass-wrap">
+            <input type="password" id="loginPassword" class="auth-input" placeholder="Enter password" required autocomplete="current-password"/>
+            <button type="button" class="auth-eye" id="loginEye">👁️</button>
+          </div>
+        </div>
+
+        <div class="auth-row-between">
+          <label class="auth-remember">
+            <input type="checkbox" id="rememberMe"/> Remember me
+          </label>
+          <button type="button" class="auth-link" id="forgotPasswordBtn">Forgot password?</button>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="loginBtn">
+          <span class="btn-glow"></span>
+          <span>Sign In →</span>
+        </button>
+
+        <p class="auth-switch">Don't have an account? <button type="button" class="auth-link" onclick="switchTab('signup')">Create one free</button></p>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form class="auth-form" id="signupForm" style="display:none;" autocomplete="on">
+        <div class="auth-error" id="signupError" style="display:none;"></div>
+
+        <button type="button" class="google-btn" id="googleSignupBtn">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+
+        <div class="auth-divider"><span>or sign up with email</span></div>
+
+        <div class="auth-field">
+          <label class="auth-label">Full Name</label>
+          <input type="text" id="signupName" class="auth-input" placeholder="Your name" required autocomplete="name"/>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <input type="email" id="signupEmail" class="auth-input" placeholder="you@example.com" required autocomplete="email"/>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <div class="auth-pass-wrap">
+            <input type="password" id="signupPassword" class="auth-input" placeholder="Min 6 characters" required autocomplete="new-password"/>
+            <button type="button" class="auth-eye" id="signupEye">👁️</button>
+          </div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Confirm Password</label>
+          <input type="password" id="signupConfirm" class="auth-input" placeholder="Re-enter password" required autocomplete="new-password"/>
+        </div>
+
+        <div class="auth-terms">
+          <input type="checkbox" id="agreeTerms" required/>
+          <label for="agreeTerms">I agree to the <span class="auth-link">Terms</span> & <span class="auth-link">Privacy Policy</span></label>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="signupBtn">
+          <span class="btn-glow"></span>
+          <span>Create Free Account →</span>
+        </button>
+
+        <p class="auth-switch">Already have an account? <button type="button" class="auth-link" onclick="switchTab('login')">Sign in</button></p>
+      </form>
+
+      <button class="auth-demo-skip" id="authDemoSkip">Skip — try demo without account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================
+     SIDEBAR
+     ============================ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">IQ</div>
+    <span class="logo-text">ProposalIQ</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="#" class="nav-item active"><span class="nav-icon">⬛</span> Dashboard</a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span> Job Analyzer</a>
+    <a href="#" class="nav-item"><span class="nav-icon">✨</span> Proposal Generator</a>
+    <a href="#" class="nav-item"><span class="nav-icon">⚡</span> Proposal Optimizer</a>
+    <a href="#" class="nav-item"><span class="nav-icon">💬</span> Follow-up AI</a>
+    <div class="nav-section-label">Tools</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🛡️</span> Scam Detector</a>
+    <a href="#" class="nav-item"><span class="nav-icon">💰</span> Price Advisor</a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔖</span> Saved Proposals</a>
+    <a href="#" class="nav-item"><span class="nav-icon">📋</span> History</a>
+    <a href="ProposalIQ_Extension.zip" download class="nav-item" style="color: #10b981; font-weight: 700;"><span class="nav-icon">🔌</span> Chrome Extension</a>
+  </nav>
+  <div class="sidebar-upgrade">
+    <div class="upgrade-card">
+      <div class="upgrade-icon">🚀</div>
+      <div class="upgrade-text"><strong>Upgrade to Pro</strong><p>Unlock unlimited AI proposals</p></div>
+    </div>
+    <button class="btn-upgrade" id="upgradeSidebarBtn">Upgrade Now</button>
+  </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ============================
+     MAIN APP
+     ============================ -->
+<div class="main-wrapper">
+  <!-- HEADER -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="hamburger" id="hamburgerBtn">☰</button>
+      <div class="header-search">
+        <span class="search-icon">🔎</span>
+        <input type="text" placeholder="Search proposals, jobs..." class="search-input"/>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="lang-toggle-btn" id="langToggleBtn" title="Switch Language">🇮🇳 हिंदी</button>
+      <div class="ai-status-pill" id="aiStatusPill">
+        <span class="ai-dot" id="aiDot"></span>
+        <span id="aiStatusText">Simulation Mode</span>
+      </div>
+      <div class="trial-badge" id="trialBadge" style="display:none;">🔥 Trial Active</div>
+      <a href="ProposalIQ_Extension.zip" download class="btn-extension-download" title="Download Chrome Extension" style="text-decoration:none; display:flex; align-items:center; gap:6px; background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#10b981; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">🔌 Extension</a>
+      <button class="btn-settings" id="settingsBtn" title="Connect Gemini AI">⚙️ Connect AI</button>
+      <button class="btn-header-upgrade" id="headerUpgradeBtn">✦ Upgrade Pro</button>
+      <div class="notif-btn">🔔<span class="notif-badge">3</span></div>
+      <div class="user-avatar" id="userAvatarMenu">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=proposaliq" alt="User" id="headerAvatar"/>
+        <div class="user-info">
+          <span class="user-name" id="headerUserName">User</span>
+          <span class="user-plan" id="headerUserPlan">Free Plan</span>
+        </div>
+        <!-- Dropdown -->
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-email" id="dropdownEmail"></div>
+          <hr class="dropdown-divider"/>
+          <button class="dropdown-item" id="dropdownProfile">👤 My Profile</button>
+          <button class="dropdown-item" id="dropdownSettings">⚙️ Settings</button>
+          <hr class="dropdown-divider"/>
+          <button class="dropdown-item danger" id="logoutBtn">🚪 Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <!-- HERO -->
+    <section class="hero-section">
+      <div class="hero-badge" id="heroBadgeEl">✦ AI-Powered · Trusted by 12,000+ Freelancers</div>
+      <h1 class="hero-heading"><span id="heroHeadingLine">Write Proposals That</span><br/><span class="gradient-text" id="heroHighlightSpan">Get Replies</span></h1>
+      <p class="hero-sub" id="heroSubText">AI-powered proposal intelligence for freelancers worldwide.</p>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-row">
+      <div class="stat-card"><div class="stat-value gradient-text">94%</div><div class="stat-label" id="statLabel1">Reply Rate Boost</div></div>
+      <div class="stat-card"><div class="stat-value gradient-text">12K+</div><div class="stat-label" id="statLabel2">Active Freelancers</div></div>
+      <div class="stat-card"><div class="stat-value gradient-text">280K</div><div class="stat-label" id="statLabel3">Proposals Generated</div></div>
+      <div class="stat-card"><div class="stat-value gradient-text">4.9★</div><div class="stat-label" id="statLabel4">User Rating</div></div>
+    </section>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+      <!-- FORM -->
+      <section class="form-panel glass-card">
+        <div class="panel-header">
+          <h2 class="panel-title" id="panelTitleEl">✨ Generate Proposal</h2>
+          <span class="panel-badge" id="aiModeBadge">AI Ready</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="labelJob">Paste Job Post <span class="required">*</span></label>
+          <textarea class="form-textarea" id="jobPost" placeholder="Paste the full job description here... ProposalIQ will analyze tone, requirements, budget signals, and client personality automatically." rows="7"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" id="labelSkill">Skill Category</label>
+            <select class="form-select" id="skillCategory">
+              <option value="">Select category...</option>
+              <option>Web Development</option><option>Mobile App Dev</option>
+              <option>UI/UX Design</option><option>Content Writing</option>
+              <option>Data Science / AI</option><option>Video Editing</option>
+              <option>SEO / Marketing</option><option>Graphic Design</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="labelExp">Experience Level</label>
+            <select class="form-select" id="expLevel">
+              <option value="">Select level...</option>
+              <option>Beginner (0–1 yr)</option><option>Intermediate (1–3 yrs)</option>
+              <option>Expert (3–7 yrs)</option><option>Senior (7+ yrs)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" id="labelTone">Preferred Tone</label>
+            <div class="tone-pills">
+              <button class="tone-pill active" data-tone="professional">Professional</button>
+              <button class="tone-pill" data-tone="friendly">Friendly</button>
+              <button class="tone-pill" data-tone="bold">Bold</button>
+              <button class="tone-pill" data-tone="conversational">Conversational</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="labelPlat">Platform</label>
+            <div class="platform-pills">
+              <button class="platform-pill active" data-platform="Upwork">Upwork</button>
+              <button class="platform-pill" data-platform="Fiverr">Fiverr</button>
+              <button class="platform-pill" data-platform="Toptal">Toptal</button>
+              <button class="platform-pill" data-platform="Freelancer">Freelancer</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-generate" id="generateBtn">
+          <span class="btn-glow"></span>
+          <span class="btn-content" id="btnGenerateText">⚡ Generate Proposal</span>
+        </button>
+        <div class="proposal-output" id="proposalOutput" style="display:none;">
+          <div class="output-header">
+            <span id="outputLabelEl">📝 Your AI Proposal</span>
+            <div class="output-actions">
+              <button class="output-btn" id="copyBtn">Copy</button>
+              <button class="output-btn" id="saveBtn">Save</button>
+            </div>
+          </div>
+          <div class="output-text" id="outputText"></div>
+        </div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <aside class="analytics-panel">
+        <div class="panel-header">
+          <h2 class="panel-title" id="analyticsTitleEl">📊 AI Analysis</h2>
+          <span class="panel-badge loading" id="analysisBadge">Waiting...</span>
+        </div>
+        <div class="analytics-grid">
+          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">💬</span><span class="ai-card-label" id="cardLabelReply">Reply Chance</span></div><div class="ai-card-value" id="val-reply">—</div><div class="progress-bar"><div class="progress-fill purple" id="prog-reply" style="width:0%"></div></div></div>
+          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">🧠</span><span class="ai-card-label" id="cardLabelClient">Client Personality</span></div><div class="ai-card-value sm" id="val-client">—</div></div>
+          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">⏱️</span><span class="ai-card-label" id="cardLabelUrgency">Urgency Level</span></div><div class="ai-card-value" id="val-urgency">—</div><div class="progress-bar"><div class="progress-fill blue" id="prog-urgency" style="width:0%"></div></div></div>
+          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">💵</span><span class="ai-card-label" id="cardLabelBudget">Budget Seriousness</span></div><div class="ai-card-value" id="val-budget">—</div><div class="progress-bar"><div class="progress-fill green" id="prog-budget" style="width:0%"></div></div></div>
+          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">👻</span><span class="ai-card-label" id="cardLabelGhost">Ghosting Risk</span></div><div class="ai-card-value" id="val-ghost">—</div><div class="progress-bar"><div class="progress-fill orange" id="prog-ghost" style="width:0%"></div></div></div>
+          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">🛡️</span><span class="ai-card-label" id="cardLabelScam">Scam Risk</span></div><div class="ai-card-value" id="val-scam">—</div><div class="progress-bar"><div class="progress-fill red" id="prog-scam" style="width:0%"></div></div></div>
+          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">✅</span><span class="ai-card-label" id="cardLabelTrust">Trust Level</span></div><div class="ai-card-value" id="val-trust">—</div><div class="progress-bar"><div class="progress-fill purple" id="prog-trust" style="width:0%"></div></div></div>
+          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">📈</span><span class="ai-card-label" id="cardLabelPrice">Pricing Confidence</span></div><div class="ai-card-value" id="val-price">—</div><div class="progress-bar"><div class="progress-fill green" id="prog-price" style="width:0%"></div></div></div>
+          <div class="ai-card wide"><div class="ai-card-top"><span class="ai-card-icon">🎯</span><span class="ai-card-label" id="cardLabelStrategy">Recommended Strategy</span></div><div class="ai-card-strategy" id="val-strategy">Generate a proposal to see the recommended winning strategy.</div></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- TEMPLATE GALLERY -->
+    <section class="template-gallery-section" id="templateGallerySection">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title" style="margin-bottom:4px;">📄 Proposal Templates</h2>
+          <p style="color:#9ca3af;font-size:13px;margin:0;">Choose a template, fully edit it, then enhance with AI</p>
+        </div>
+        <span class="panel-badge done">8 Templates</span>
+      </div>
+      <div class="template-gallery" id="templateGallery"></div>
+    </section>
+
+    <!-- INSIGHTS -->
+    <section class="insights-section" id="insightsSection" style="display:none;">
+      <h2 class="section-title" id="insightsTitleEl">🔎 Deep Job Insights</h2>
+      <div class="insights-grid">
+        <div class="insight-card glass-card"><div class="insight-header pain" id="painHeader"><span>😣</span> Client Pain Points</div><ul class="insight-list" id="painList"></ul></div>
+        <div class="insight-card glass-card"><div class="insight-header wants" id="wantsHeader"><span>🎯</span> What Client Really Wants</div><ul class="insight-list" id="wantsList"></ul></div>
+        <div class="insight-card glass-card"><div class="insight-header avoid" id="avoidHeader"><span>🚫</span> What to Avoid</div><ul class="insight-list" id="avoidList"></ul></div>
+        <div class="insight-card glass-card"><div class="insight-header tips" id="tipsHeader"><span>💡</span> AI Proposal Tips</div><ul class="insight-list" id="tipsList"></ul></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-card glass-card">
+    <button class="modal-close" id="settingsClose">✕</button>
+    <div class="modal-icon">🤖</div>
+    <h2>Connect Gemini AI</h2>
+    <p>Add your <strong>free</strong> Gemini API key to unlock real AI-powered proposals.</p>
+    <div class="api-key-steps">
+      <div class="api-step"><span class="step-num">1</span><span>Go to <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></span></div>
+      <div class="api-step"><span class="step-num">2</span><span>Click "Create API Key" (it's free)</span></div>
+      <div class="api-step"><span class="step-num">3</span><span>Paste the key below and save</span></div>
+    </div>
+    <div class="api-key-input-wrap">
+      <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="api-key-input"/>
+      <button class="toggle-key-btn" id="toggleKeyBtn">👁️</button>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-generate" id="saveApiKeyBtn"><span class="btn-content">💾 Save & Connect</span></button>
+      <button class="btn-clear-key" id="clearApiKeyBtn">Remove Key</button>
+    </div>
+    <div class="api-key-note">🔒 Stored in your browser's localStorage only</div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal-card glass-card">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-icon">🚀</div>
+    <h2>Upgrade to Pro</h2>
+    <p>Unlock unlimited AI proposals, advanced analytics, and priority support.</p>
+    <div class="modal-features">
+      <div class="modal-feature">✅ Unlimited Proposals</div>
+      <div class="modal-feature">✅ Advanced Scam Detection</div>
+      <div class="modal-feature">✅ Price Advisor AI</div>
+      <div class="modal-feature">✅ Follow-up AI Sequences</div>
+      <div class="modal-feature">✅ Priority Support</div>
+    </div>
+    <div class="modal-price" style="display:flex; flex-direction:column; align-items:center;">
+      <span style="text-decoration: line-through; color: #9ca3af; font-size: 16px;">$19/mo</span>
+      <div><span class="price-big">$2.99</span>/month</div>
+      <div style="background: #10b981; color: white; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: bold; margin-top: 4px;">LAUNCH SPECIAL 85% OFF</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top:1.5rem;">
+      <button class="btn-generate start-trial-btn"><span class="btn-glow"></span><span class="btn-content">🚀 Start 7-Day Free Trial</span></button>
+      <button class="btn-generate buy-pro-btn" style="background: linear-gradient(135deg, #10b981, #059669);"><span class="btn-content">💳 Buy Pro Now ($2.99)</span></button>
+    </div>
+    <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px;" id="trialNoteEl">No credit card required for trial · Cancel anytime</p>
+  </div>
+</div>
+
+<!-- TEMPLATE EDITOR MODAL -->
+<div class="modal-overlay" id="templateEditorModal">
+  <div class="tpl-editor-modal">
+    <div class="tpl-editor-topbar">
+      <h2 id="tplEditorName">Proposal Template</h2>
+      <div class="tpl-editor-topbar-actions">
+        <button class="tpl-topbar-btn" id="tplCopyBtn" onclick="copyTemplateText()">📋 Copy Text</button>
+        <button class="tpl-topbar-btn" onclick="downloadTemplate()">📥 Download</button>
+        <button class="tpl-topbar-btn green" onclick="useWithAI()">🤖 Enhance with AI</button>
+        <button class="tpl-topbar-btn red" onclick="closeTemplateEditor()">✕ Close</button>
+      </div>
+    </div>
+    <div class="tpl-editor-hint">💡 Click any text to edit it directly in the document below.</div>
+    <div class="tpl-doc-canvas" id="tplDocCanvas"></div>
+  </div>
+</div>
+
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="stripe-config.js"></script>
+<script src="google-config.js"></script>
+<script src="auth.js"></script>
+<script src="lang.js"></script>
+<script src="template-data.js"></script>
+<script src="templates.js"></script>
+<script src="app.js"></script>
+<script>
+  // User avatar dropdown toggle
+  document.getElementById('userAvatarMenu').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('userDropdown').classList.toggle('open');
+    const email = document.getElementById('dropdownEmail');
+    if (email && window.currentUser && window.currentUser()) {
+      email.textContent = window.currentUser().email || '';
+    }
+  });
+  document.addEventListener('click', () => {
+    document.getElementById('userDropdown').classList.remove('open');
+  });
+  // Password eye toggles
+  ['loginEye','signupEye'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    const targetId = id === 'loginEye' ? 'loginPassword' : 'signupPassword';
+    btn.addEventListener('click', () => {
+      const inp = document.getElementById(targetId);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    });
+  });
+</script>
+</body>
+</html>

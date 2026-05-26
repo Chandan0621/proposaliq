@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "ProposalIQ – AI Proposal Writer",
+  "version": "1.0.0",
+  "description": "Write winning freelance proposals instantly. Works on Upwork, Fiverr, Freelancer & more.",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": [
+    "https://www.upwork.com/*",
+    "https://www.fiverr.com/*",
+    "https://www.freelancer.com/*",
+    "https://www.toptal.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ProposalIQ AI",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [{
+    "matches": [
+      "https://www.upwork.com/jobs/*",
+      "https://www.upwork.com/ab/proposals/*",
+      "https://www.freelancer.com/projects/*",
+      "https://www.fiverr.com/requests/*"
+    ],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

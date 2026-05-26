@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>ProposalIQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="popup.css"/>
+</head>
+<body>
+<div class="popup-wrap">
+
+  <!-- HEADER -->
+  <div class="popup-header">
+    <div class="popup-logo">
+      <div class="popup-logo-icon">IQ</div>
+      <span class="popup-logo-text">ProposalIQ</span>
+    </div>
+    <div class="popup-header-right">
+      <div class="ai-dot-wrap" id="aiDotWrap" title="AI Status">
+        <div class="p-ai-dot" id="pAiDot"></div>
+      </div>
+      <button class="popup-settings-btn" id="settingsToggle" title="Settings">⚙️</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div class="settings-panel" id="settingsPanel" style="display:none;">
+    <div class="settings-label">🔑 Gemini API Key</div>
+    <div class="settings-row">
+      <input type="password" id="apiKeyField" class="settings-input" placeholder="AIzaSy..."/>
+      <button class="settings-save-btn" id="saveKeyBtn">Save</button>
+    </div>
+    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="settings-link">
+      Get free API key →
+    </a>
+    <div class="settings-label" style="margin-top:10px;">⚡ Platform</div>
+    <select class="settings-input" id="platformSelect">
+      <option>Upwork</option><option>Fiverr</option>
+      <option>Freelancer</option><option>Toptal</option>
+    </select>
+    <div class="settings-label" style="margin-top:10px;">🎨 Tone</div>
+    <select class="settings-input" id="toneSelect">
+      <option value="professional">Professional</option>
+      <option value="friendly">Friendly</option>
+      <option value="bold">Bold</option>
+      <option value="conversational">Conversational</option>
+    </select>
+  </div>
+
+  <!-- MAIN PANEL -->
+  <div class="main-panel" id="mainPanel">
+    <!-- Auto-detect bar -->
+    <div class="auto-detect-bar" id="autoDetectBar" style="display:none;">
+      <span>📋 Job detected!</span>
+      <button class="auto-fill-btn" id="autoFillBtn">Auto-fill ↓</button>
+    </div>
+
+    <!-- Job textarea -->
+    <div class="field-group">
+      <label class="field-label">Paste Job Post</label>
+      <textarea class="popup-textarea" id="popupJobPost" placeholder="Paste job description here..." rows="5"></textarea>
+    </div>
+
+    <!-- Generate Button -->
+    <button class="popup-generate-btn" id="popupGenerateBtn">
+      <span id="popupBtnText">⚡ Generate Proposal</span>
+    </button>
+
+    <!-- SCORE STRIP -->
+    <div class="score-strip" id="scoreStrip" style="display:none;">
+      <div class="score-chip" id="chipReply">💬 —</div>
+      <div class="score-chip warn" id="chipScam">🛡️ —</div>
+      <div class="score-chip" id="chipGhost">👻 —</div>
+      <div class="score-chip" id="chipBudget">💵 —</div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="popup-output" id="popupOutput" style="display:none;">
+      <div class="output-bar">
+        <span class="output-label">📝 AI Proposal</span>
+        <div class="output-bar-btns">
+          <button class="mini-btn" id="popupCopyBtn">Copy</button>
+          <button class="mini-btn" id="popupOpenBtn">Open Full ↗</button>
+        </div>
+      </div>
+      <div class="output-body" id="popupOutputText"></div>
+    </div>
+
+    <!-- STRATEGY -->
+    <div class="strategy-box" id="strategyBox" style="display:none;">
+      <div class="strategy-label">🎯 Strategy</div>
+      <div class="strategy-text" id="strategyText"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="popup-footer">
+    <span>ProposalIQ v1.0</span>
+    <a href="https://proposaliq-ai.surge.sh" target="_blank">Open Dashboard ↗</a>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
