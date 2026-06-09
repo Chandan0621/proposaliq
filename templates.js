@@ -42,8 +42,7 @@ function showVariants(catId) {
   const el = document.getElementById('templateGallery');
   const section = document.getElementById('templateGallerySection');
 
-  const user    = (typeof window.currentUser === 'function') ? window.currentUser() : null;
-  const isPro   = (user?.plan === 'pro' || user?.plan === 'trial');
+  const isPro   = false; // Locked for everyone
   const lockBadge = isPro ? '' : '<span style="position:absolute;top:10px;right:10px;font-size:14px;" title="Pro Feature">🔒</span>';
 
   // Back button + variant grid
@@ -70,9 +69,7 @@ function openTemplateEditor(catId, variantIdx) {
   if (!cat || !variant) return;
 
   // ---- PRO GATE ----
-  const user = (typeof window.currentUser === 'function') ? window.currentUser() : null;
-  const plan = user?.plan || 'free';
-  const isPro = (plan === 'pro' || plan === 'trial');
+  const isPro = false; // Locked for everyone
 
   if (!isPro) {
     // Show locked overlay instead of editor
@@ -102,31 +99,17 @@ function showTemplateLockedPrompt(cat, variant) {
   overlay.innerHTML = `
     <div style="background:#fff;border-radius:24px;padding:36px 32px;max-width:440px;width:92%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.25);font-family:Inter,sans-serif;">
       <div style="font-size:52px;margin-bottom:12px;">🔒</div>
-      <h2 style="font-size:20px;font-weight:800;color:#1e1b4b;margin:0 0 8px;">Pro Feature</h2>
+      <h2 style="font-size:20px;font-weight:800;color:#1e1b4b;margin:0 0 8px;">Templates Locked</h2>
       <p style="color:#6b7280;font-size:13.5px;line-height:1.7;margin:0 0 20px;">
-        The <b style="color:${cat.color};">${cat.icon} ${cat.name} — ${variant.name}</b> template is available for <b>Pro members only</b>.<br><br>
-        Upgrade to get access to all <b>80 high-converting templates</b> — fully editable, downloadable, and AI-enhanced!
+        The <b style="color:${cat.color};">${cat.icon} ${cat.name} — ${variant.name}</b> template is locked. <br><br>
+        Proposal templates are premium features and are currently disabled.
       </p>
-      <div style="background:#f8f7ff;border-radius:12px;padding:14px;margin-bottom:20px;text-align:left;">
-        <div style="font-size:12.5px;color:#374151;line-height:2;">
-          ✅ All 80 proposal templates (10 per category)<br>
-          ✅ Click-to-edit visual document editor<br>
-          ✅ Download as .txt file<br>
-          ✅ Enhance any template with real Gemini AI<br>
-          ✅ 7-Day Free Trial — No Credit Card Required
-        </div>
-      </div>
       <div style="display:flex;gap:10px;flex-direction:column;">
-        <button onclick="document.getElementById('tplLockedOverlay').remove(); document.getElementById('upgradeModal').classList.add('open');"
-          style="width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#3b82f6);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:0.3px;">
-          🚀 Start 7-Day Free Trial
-        </button>
         <button onclick="document.getElementById('tplLockedOverlay').remove();"
-          style="width:100%;padding:11px;background:none;border:1.5px solid #e5e7eb;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;color:#6b7280;">
-          Maybe Later
+          style="width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#3b82f6);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:0.3px;">
+          OK, Got it
         </button>
       </div>
-      <p style="margin-top:12px;font-size:11.5px;color:#9ca3af;">Already a Pro member? Make sure you're signed in.</p>
     </div>`;
 
   document.body.appendChild(overlay);
