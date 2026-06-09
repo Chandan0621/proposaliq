@@ -289,50 +289,9 @@ function showGoogleSetupPrompt() {
 // =====================
 function initAuth() {
   try {
-    if (useFirebase) {
-      // Firebase real-time state observer
-      firebase.auth().onAuthStateChanged((firebaseUser) => {
-        if (firebaseUser) {
-          const uid = firebaseUser.uid;
-          const dbRef = firebase.database().ref('users/' + uid);
-          dbRef.on('value', (snapshot) => {
-            const dbData = snapshot.val() || {};
-            const sessionUser = {
-              name: dbData.name || firebaseUser.displayName || firebaseUser.email.split('@')[0],
-              email: firebaseUser.email,
-              plan: dbData.plan || 'free',
-              trialEnd: dbData.trialEnd,
-              trialStart: dbData.trialStart
-            };
-            saveSession(sessionUser);
-            currentUserData = sessionUser;
-            checkAndUpdateTrial();
-            onUserLoggedIn(currentUserData);
-          });
-        } else {
-          clearSession();
-          currentUserData = null;
-          onUserLoggedOut();
-        }
-      });
-    } else {
-      // LocalStorage fall-back logic
-      const session = getSession();
-      if (session && session.email) {
-        currentUserData = session;
-        checkAndUpdateTrial();
-        onUserLoggedIn(currentUserData);
-      } else {
-        onUserLoggedOut();
-      }
-    }
-    
-    // Google Identity Services (only if not Firebase)
-    if (!useFirebase) {
-      window.onGoogleLibraryLoad = initGoogleSignIn;
-      if (typeof google !== 'undefined') initGoogleSignIn();
-    }
-  } catch (e) { console.error('Auth init error:', e); onUserLoggedOut(); }
+    // Automatically log in as Guest with Pro plan on init
+    skipToDemo();
+  } catch (e) { console.error('Auth init error:', e); skipToDemo(); }
 }
 
 function onUserLoggedIn(user) {
@@ -341,10 +300,10 @@ function onUserLoggedIn(user) {
   updatePlanBadge(user);
   if (typeof updateAiStatus === 'function') updateAiStatus();
 }
-function onUserLoggedOut() { showAuthOverlay(); resetHeaderUser(); }
+function onUserLoggedOut() { skipToDemo(); resetHeaderUser(); }
 function showAuthOverlay() {
   const el = document.getElementById('authOverlay');
-  if (el) { el.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
 }
 function hideAuthOverlay() {
   const el = document.getElementById('authOverlay');
@@ -360,10 +319,10 @@ function updateHeaderUser(user) {
   const planEl   = document.getElementById('headerUserPlan');
   const avatarEl = document.getElementById('headerAvatar');
   const emailEl  = document.getElementById('dropdownEmail');
-  if (nameEl)   nameEl.textContent = user.name || user.email.split('@')[0];
-  if (planEl)   planEl.textContent = user.plan === 'pro' ? '✦ Pro Member' : user.plan === 'trial' ? 'Pro Trial' : 'Free Plan';
+  if (nameEl)   nameEl.textContent = user.name === 'Guest' ? 'Freelancer' : user.name;
+  if (planEl)   planEl.textContent = 'Pro Access';
   if (avatarEl) avatarEl.src = user.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${initial}&backgroundColor=7c3aed&textColor=ffffff`;
-  if (emailEl)  emailEl.textContent = user.email;
+  if (emailEl)  emailEl.textContent = user.isGuest ? 'Free Platform' : user.email;
 }
 function resetHeaderUser() {
   const n = document.getElementById('headerUserName'); if(n) n.textContent = 'Sign In';
@@ -436,7 +395,7 @@ function handleBuyPro() {
 //  DEMO SKIP
 // =====================
 function skipToDemo() {
-  const guest = { name: 'Guest', email: 'guest@proposaliq.app', isGuest: true, plan: 'free' };
+  const guest = { name: 'Guest', email: 'guest@proposaliq.app', isGuest: true, plan: 'pro' };
   currentUserData = guest; onUserLoggedIn(guest);
 }
 
