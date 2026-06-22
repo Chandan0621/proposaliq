@@ -588,3 +588,727 @@ function showToast(msg, type='info') {
 
 // ---- INIT ----
 updateAiStatus();
+
+// ============================================================
+//  FEATURE TAB SWITCHER
+// ============================================================
+function switchFeatureTab(tabId) {
+  ['proposalGen','fiverrRequest','clientMsg','followUp','coldEmail'].forEach(id => {
+    const el = document.getElementById('tab-' + id);
+    if (el) el.style.display = 'none';
+  });
+  const target = document.getElementById('tab-' + tabId);
+  if (target) target.style.display = 'block';
+
+  document.querySelectorAll('.feature-tab').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.querySelector(`.feature-tab[data-tab="${tabId}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const analytics = document.querySelector('.analytics-panel');
+  if (analytics) analytics.style.display = tabId === 'proposalGen' ? '' : 'none';
+
+  // Load history when switching to cold email tab
+  if (tabId === 'coldEmail') loadColdEmailHistory();
+}
+
+// ============================================================
+//  COPY OUTPUT HELPER (for new tabs)
+// ============================================================
+function copyOutput(elId, btn) {
+  const text = document.getElementById(elId)?.innerText || '';
+  if (!text) return;
+  function fallback(t) { const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta); }
+  try {
+    if (navigator.clipboard) { navigator.clipboard.writeText(text).catch(() => fallback(text)); }
+    else { fallback(text); }
+    if (btn) { btn.textContent='✓ Copied!'; btn.style.background='#15803d'; setTimeout(()=>{btn.textContent='Copy';btn.style.background='';},2000); }
+  } catch(e) { fallback(text); }
+}
+
+// ============================================================
+//  TAB 2: FIVERR BUYER REQUEST GENERATOR
+// ============================================================
+async function generateFiverrReply() {
+  const request = document.getElementById('fiverrRequest')?.value.trim();
+  if (!request || request.length < 15) { shakeEl(document.getElementById('fiverrRequest')); showToast('❌ Please paste a buyer request first.','error'); return; }
+
+  const gigCat = document.getElementById('fiverrGigCat')?.value || 'General';
+  const level  = document.getElementById('fiverrLevel')?.value  || 'New Seller';
+  const btn    = document.getElementById('fiverrGenerateBtn');
+  const outputDiv  = document.getElementById('fiverrOutput');
+  const outputText = document.getElementById('fiverrOutputText');
+
+  btn.disabled = true; btn.querySelector('.btn-content').textContent = '⏳ Generating...';
+
+  const apiKey = getApiKey();
+  let reply = '';
+
+  try {
+    if (apiKey) {
+      const prompt = `You are an expert Fiverr seller. Write a short, compelling reply to this Fiverr buyer request. Make it feel personal, not template-like. Mention their specific needs. Keep it under 120 words. Do not use "Dear" or "To Whom".
+
+Buyer Request: """${request}"""
+Seller's Gig Category: ${gigCat}
+Seller Level: ${level}
+
+Write a reply that:
+1. Acknowledges their specific requirement in line 1
+2. Briefly mentions relevant experience (1 line)
+3. States delivery time and what they'll get
+4. Ends with a soft call to action
+
+Output ONLY the reply message, nothing else.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.75, maxOutputTokens:400} }) });
+      const data = await resp.json();
+      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    }
+
+    if (!reply) {
+      await delay(1200);
+      const intros = [
+        `Hi! I noticed you need ${gigCat.toLowerCase()} services and I'd love to help.`,
+        `Hello! Your request for ${gigCat.toLowerCase()} caught my attention — this is exactly what I specialize in.`,
+        `Hi there! I specialize in ${gigCat.toLowerCase()} and your project sounds like a great fit.`,
+      ];
+      const bodies = [
+        `As a ${level} seller with hands-on experience in ${gigCat}, I can deliver exactly what you're looking for — clean, professional, and on time.`,
+        `I've completed 50+ similar projects and know exactly how to handle this efficiently.`,
+        `My work is focused on quality first — I won't deliver until you're 100% satisfied.`,
+      ];
+      const ctas = [
+        `Feel free to message me so we can discuss the details and get started right away!`,
+        `I'm available to start immediately. Let's chat to confirm the requirements!`,
+        `Send me a message and I'll share some samples relevant to your project.`,
+      ];
+      const rand = arr => arr[Math.floor(Math.random()*arr.length)];
+      reply = `${rand(intros)}\n\n${rand(bodies)}\n\n${rand(ctas)}`;
+    }
+
+    outputText.textContent = reply;
+    outputDiv.style.display = 'block';
+    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    showToast('✅ Fiverr reply ready!', 'success');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.querySelector('.btn-content').textContent = '🛒 Generate Buyer Reply';
+  }
+}
+
+// ============================================================
+//  TAB 3: CLIENT MESSAGE WRITER
+// ============================================================
+async function generateClientReply() {
+  const msg  = document.getElementById('clientMsg')?.value.trim();
+  if (!msg || msg.length < 10) { shakeEl(document.getElementById('clientMsg')); showToast('❌ Please paste the client message first.','error'); return; }
+
+  const type  = document.getElementById('clientMsgType')?.value  || 'inquiry';
+  const tone  = document.getElementById('clientMsgTone')?.value  || 'professional';
+  const outputDiv  = document.getElementById('clientMsgOutput');
+  const outputText = document.getElementById('clientMsgOutputText');
+
+  outputText.textContent = '⏳ Writing your reply...';
+  outputDiv.style.display = 'block';
+
+  const apiKey = getApiKey();
+  let reply = '';
+
+  try {
+    if (apiKey) {
+      const prompt = `You are a professional freelancer. Write a reply to the following client message.
+Message Type: ${type}
+Tone: ${tone}
+Client's Message: """${msg}"""
+
+Write a reply that:
+- Addresses every point the client raised
+- Is ${tone} in tone
+- Is under 150 words
+- Feels human, not robotic or template-like
+- Ends with a clear next step
+
+Output ONLY the reply, nothing else.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:500} }) });
+      const data = await resp.json();
+      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    }
+
+    if (!reply) {
+      await delay(1000);
+      const templates = {
+        inquiry:     `Hi! Thanks for reaching out.\n\nTo answer your questions: I have hands-on experience with exactly the type of project you've described, and I'm confident in delivering great results within your timeline.\n\nI'd be happy to share relevant samples or jump on a quick call to discuss further. What works best for you?`,
+        negotiation: `Hi! Thanks for your message.\n\nI completely understand budget considerations. While my standard rate reflects the quality and timeline I deliver, I'm open to finding a middle ground.\n\nIf we adjust the scope slightly or extend the deadline by a couple of days, I may be able to accommodate your budget. Let me know your thoughts and we can work something out!`,
+        revision:    `Hi! Absolutely, I want to make sure this is perfect for you.\n\nThank you for the detailed feedback — I completely understand what needs to be changed. I'll get started on the revisions right away and send you the updated version within [timeframe].\n\nPlease feel free to share any additional notes so I can get it right this time!`,
+        delay:       `Hi! Thank you for letting me know in advance — I really appreciate that.\n\nI understand completely. Take the time you need and please don't rush on my account. I'll keep the project open on my end, and whenever you're ready to move forward, just send me a message.\n\nLooking forward to working with you!`,
+        complaint:   `Hi! I sincerely apologize for the experience — this is not the standard I hold myself to.\n\nThank you for bringing this to my attention. I want to make this right for you. Please tell me specifically what didn't meet your expectations and I will fix it as a priority, no questions asked.\n\nYour satisfaction is my top concern.`,
+        positive:    `Hi! Thank you so much — this genuinely made my day!\n\nIt was a real pleasure working on this project with you. Your clear communication made everything smoother, and I'm glad the outcome met your expectations.\n\nIf you ever have future projects, I'd love to work together again. Please feel free to reach out anytime!`,
+      };
+      reply = templates[type] || templates.inquiry;
+    }
+
+    outputText.textContent = reply;
+    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    showToast('✅ Client reply ready!', 'success');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error');
+  }
+}
+
+// ============================================================
+//  TAB 4: FOLLOW-UP GENERATOR
+// ============================================================
+async function generateFollowUp() {
+  const context  = document.getElementById('followUpContext')?.value.trim();
+  if (!context || context.length < 10) { shakeEl(document.getElementById('followUpContext')); showToast('❌ Please describe your original proposal first.','error'); return; }
+
+  const followNum  = document.getElementById('followUpNumber')?.value  || '1st';
+  const platform   = document.getElementById('followUpPlatform')?.value || 'Upwork';
+  const outputDiv  = document.getElementById('followUpOutput');
+  const outputText = document.getElementById('followUpOutputText');
+
+  outputText.textContent = '⏳ Crafting follow-up...';
+  outputDiv.style.display = 'block';
+
+  const apiKey = getApiKey();
+  let reply = '';
+
+  try {
+    if (apiKey) {
+      const prompt = `You are a professional freelancer on ${platform}. Write a ${followNum} follow-up message for the following context.
+
+Context: """${context}"""
+
+Rules:
+- This is a ${followNum} follow-up — match the urgency level accordingly
+- Keep it SHORT (under 80 words) — respect their time
+- Do NOT be desperate or pushy
+- Remind them of the value you offer in one line
+- End with ONE clear, easy question or call to action
+- Sound natural and human
+
+Output ONLY the follow-up message.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:300} }) });
+      const data = await resp.json();
+      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    }
+
+    if (!reply) {
+      await delay(900);
+      const msgs = {
+        '1st':  `Hi! I just wanted to follow up on my proposal from a couple of days ago.\n\nI'm still very interested in your project and believe I can deliver exactly what you need. If you have any questions or need any clarification, I'm happy to jump on a quick call.\n\nLooking forward to hearing from you!`,
+        '2nd':  `Hi again! I understand you're probably busy — I just wanted to check in one more time before I close out my availability for this week.\n\nIf the project is still moving forward, I'd love to be part of it. Is there anything specific holding back a decision that I can address?\n\nEither way, thanks for your time!`,
+        'final':`Hi! This will be my last follow-up — I don't want to clutter your inbox.\n\nIf the timing isn't right, that's completely okay. If you do decide to move forward in the future, I'd still be happy to work together.\n\nWishing you all the best with your project! 🙂`,
+      };
+      reply = msgs[followNum] || msgs['1st'];
+    }
+
+    outputText.textContent = reply;
+    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    showToast('✅ Follow-up message ready!', 'success');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error');
+  }
+}
+
+// ============================================================
+//  COLD EMAIL GENERATOR — HELPERS
+// ============================================================
+function setCETone(btn) {
+  document.querySelectorAll('#ceTonePills .tone-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function updateCharCounter(textareaId, counterId, max) {
+  const len = document.getElementById(textareaId)?.value.length || 0;
+  const el  = document.getElementById(counterId);
+  if (el) {
+    el.textContent = `${len} / ${max}`;
+    el.style.color = len >= max * 0.9 ? '#ef4444' : '';
+  }
+}
+
+function copyCESection(elId, btn) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const text = el.innerText || el.textContent || '';
+  function fallback(t) { const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}finally{document.body.removeChild(ta);} }
+  const success = () => { if(btn){btn.textContent='✓ Copied!';btn.style.background='#15803d';setTimeout(()=>{btn.textContent='Copy';btn.style.background='';},2000);} };
+  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(success).catch(()=>{fallback(text);success();}); }
+  else { fallback(text); success(); }
+}
+
+function copyAllColdEmails() {
+  const ids = ['ceSubjectLines','ceEmailA','ceEmailB','ceFollowup1','ceFollowup2','ceLinkedIn'];
+  const labels = ['=== 5 SUBJECT LINES ===','=== COLD EMAIL VERSION A ===','=== COLD EMAIL VERSION B ===','=== FOLLOW-UP EMAIL #1 ===','=== FOLLOW-UP EMAIL #2 ===','=== LINKEDIN OUTREACH ==='];
+  let full = '';
+  ids.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el && el.innerText.trim()) {
+      full += `${labels[i]}\n\n${el.innerText.trim()}\n\n`;
+    }
+  });
+  if (!full) { showToast('❌ Generate emails first!', 'error'); return; }
+  function fallback(t) { const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}finally{document.body.removeChild(ta);} }
+  if (navigator.clipboard) { navigator.clipboard.writeText(full.trim()).then(()=>showToast('✅ All emails copied!','success')).catch(()=>{fallback(full);showToast('✅ Copied!','success');}); }
+  else { fallback(full); showToast('✅ All emails copied!','success'); }
+}
+
+function exportColdEmailsTXT() {
+  const prospect = document.getElementById('ceProspectName')?.value.trim() || 'Prospect';
+  const company  = document.getElementById('ceCompanyName')?.value.trim() || 'Company';
+  const ids = ['ceSubjectLines','ceEmailA','ceEmailB','ceFollowup1','ceFollowup2','ceLinkedIn'];
+  const labels = ['5 SUBJECT LINES','COLD EMAIL VERSION A','COLD EMAIL VERSION B','FOLLOW-UP EMAIL #1','FOLLOW-UP EMAIL #2','LINKEDIN OUTREACH MESSAGE'];
+  let content = `PROPOSALIQ — COLD EMAIL GENERATOR\nGenerated for: ${prospect} @ ${company}\nDate: ${new Date().toLocaleDateString()}\n${'='.repeat(50)}\n\n`;
+  ids.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el && el.innerText.trim()) {
+      content += `${labels[i]}\n${'-'.repeat(40)}\n${el.innerText.trim()}\n\n`;
+    }
+  });
+  if (!content.includes('---')) { showToast('❌ Generate emails first!', 'error'); return; }
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `cold-email-${prospect.replace(/\s+/g,'-').toLowerCase()}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ TXT file downloaded!', 'success');
+}
+
+const CE_HISTORY_KEY = 'proposaliq_ce_history';
+
+function saveColdEmailHistory() {
+  const prospect = document.getElementById('ceProspectName')?.value.trim();
+  const company  = document.getElementById('ceCompanyName')?.value.trim();
+  if (!prospect || !company) { showToast('❌ No emails to save yet.', 'error'); return; }
+
+  const ids = ['ceSubjectLines','ceEmailA','ceEmailB','ceFollowup1','ceFollowup2','ceLinkedIn'];
+  const data = {};
+  ids.forEach(id => { const el = document.getElementById(id); if(el) data[id] = el.innerText.trim(); });
+
+  const existing = JSON.parse(localStorage.getItem(CE_HISTORY_KEY) || '[]');
+  existing.unshift({ prospect, company, data, time: Date.now() });
+  if (existing.length > 5) existing.pop();
+  localStorage.setItem(CE_HISTORY_KEY, JSON.stringify(existing));
+  loadColdEmailHistory();
+  showToast('✅ Saved to history!', 'success');
+}
+
+function loadColdEmailHistory() {
+  const history = JSON.parse(localStorage.getItem(CE_HISTORY_KEY) || '[]');
+  const section = document.getElementById('ceHistorySection');
+  const list    = document.getElementById('ceHistoryList');
+  if (!section || !list) return;
+  if (!history.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = history.map((item, i) => {
+    const ago = timeAgo(item.time);
+    return `<div class="ce-history-item" onclick="restoreCEHistory(${i})">
+      <div class="ce-history-meta">
+        <span class="ce-history-name">${item.prospect} — ${item.company}</span>
+        <span class="ce-history-time">${ago}</span>
+      </div>
+      <span class="ce-history-restore">↩ Restore</span>
+    </div>`;
+  }).join('');
+}
+
+function restoreCEHistory(idx) {
+  const history = JSON.parse(localStorage.getItem(CE_HISTORY_KEY) || '[]');
+  const item = history[idx];
+  if (!item) return;
+  document.getElementById('ceProspectName').value = item.prospect;
+  document.getElementById('ceCompanyName').value  = item.company;
+  Object.keys(item.data).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = item.data[id];
+  });
+  renderCESubjectLines(item.data['ceSubjectLines'] || '');
+  document.getElementById('ceOutputSection').style.display = 'block';
+  showToast('✅ History restored!', 'success');
+  document.getElementById('ceOutputSection').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function clearColdEmailHistory() {
+  localStorage.removeItem(CE_HISTORY_KEY);
+  loadColdEmailHistory();
+  showToast('🗑️ History cleared.', 'info');
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1)  return 'Just now';
+  if (mins < 60) return `${mins} minute${mins>1?'s':''} ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)  return `${hrs} hour${hrs>1?'s':''} ago`;
+  return `${Math.floor(hrs/24)} day(s) ago`;
+}
+
+function renderCESubjectLines(text) {
+  const el = document.getElementById('ceSubjectLines');
+  if (!el) return;
+  const lines = text.split('\n').filter(l => l.trim()).slice(0, 5);
+  if (!lines.length) { el.textContent = text; return; }
+  el.innerHTML = lines.map((line, i) => {
+    const clean = line.replace(/^\d+[\.\)]\s*/, '').replace(/^[-•*]\s*/, '').trim();
+    return `<div class="ce-subject-line">
+      <span class="ce-subject-num">${i+1}</span>
+      <span class="ce-subject-text">${clean}</span>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+//  TAB 5: COLD EMAIL GENERATOR — MAIN FUNCTION
+// ============================================================
+async function generateColdEmail() {
+  const prospect = document.getElementById('ceProspectName')?.value.trim();
+  const company  = document.getElementById('ceCompanyName')?.value.trim();
+  const service  = document.getElementById('ceService')?.value.trim();
+  const goal     = document.getElementById('ceGoal')?.value.trim();
+
+  if (!prospect) { shakeEl(document.getElementById('ceProspectName')); showToast('❌ Enter prospect name.','error'); return; }
+  if (!company)  { shakeEl(document.getElementById('ceCompanyName'));  showToast('❌ Enter company name.','error'); return; }
+  if (!service)  { shakeEl(document.getElementById('ceService'));      showToast('❌ Enter your service.','error'); return; }
+  if (!goal)     { shakeEl(document.getElementById('ceGoal'));         showToast('❌ Enter your goal/value prop.','error'); return; }
+
+  const industry = document.getElementById('ceIndustry')?.value || 'SaaS';
+  const tone     = document.querySelector('#ceTonePills .tone-pill.active')?.dataset.tone || 'Professional';
+
+  const btn = document.getElementById('ceGenerateBtn');
+  btn.disabled = true;
+  btn.querySelector('.btn-content').textContent = '⏳ Generating...';
+
+  // Show skeleton loading
+  const outputSection = document.getElementById('ceOutputSection');
+  outputSection.style.display = 'block';
+  const cardIds = ['ceSubjectLines','ceEmailA','ceEmailB','ceFollowup1','ceFollowup2','ceLinkedIn'];
+  cardIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<div class="ce-loading-pulse"></div><div class="ce-loading-pulse" style="width:80%"></div><div class="ce-loading-pulse" style="width:60%"></div>`;
+  });
+  outputSection.scrollIntoView({ behavior:'smooth', block:'start' });
+
+  const apiKey = getApiKey();
+  let results = null;
+
+  try {
+    if (apiKey) {
+      const prompt = `You are a world-class cold email copywriter. Generate high-converting cold email content for the following prospect.
+
+Prospect: ${prospect}
+Company: ${company}
+Industry: ${industry}
+Service Offered: ${service}
+Goal / Value Prop: ${goal}
+Tone: ${tone}
+
+Generate exactly this JSON structure (no markdown, no code blocks, raw JSON only):
+{
+  "subjectLines": ["subject1", "subject2", "subject3", "subject4", "subject5"],
+  "emailA": "full email text here",
+  "emailB": "full email text here (different angle/hook)",
+  "followup1": "first follow-up email (send 3 days later)",
+  "followup2": "second follow-up email (send 7 days later, final)",
+  "linkedin": "linkedin connection request or DM message (max 300 chars)"
+}
+
+Rules for ALL emails:
+- Never start with "I hope this email finds you well"
+- Never say "I wanted to reach out"
+- Open with a strong hook referencing ${company} or ${industry}
+- Focus on THEIR problem, not your service
+- Keep emails under 120 words each
+- Make subject lines curiosity-driven or value-driven
+- LinkedIn message must be under 300 characters
+- Tone: ${tone}
+- Human sounding, not AI-generated sounding
+- Strong, specific CTA at the end of each email`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.8, maxOutputTokens: 2000 }
+        })
+      });
+      const data = await resp.json();
+      const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+      // Extract JSON from response
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        results = JSON.parse(jsonMatch[0]);
+      }
+    }
+
+    // Smart simulation fallback
+    if (!results) {
+      await delay(1800);
+      const hooks = {
+        Professional: `I was looking at ${company}'s recent work in the ${industry} space`,
+        Friendly:     `Hey ${prospect}, I came across ${company} and loved what you're building`,
+        Direct:       `${company} is leaving revenue on the table. Here's why`,
+        Premium:      `Most ${industry} companies we work with had the same challenge before we helped them fix it`,
+      };
+      const ctaMap = {
+        Professional: `Would you be open to a 15-minute call this week?`,
+        Friendly:     `Would love to chat — what does your schedule look like this week?`,
+        Direct:       `Can we talk Thursday or Friday for 15 minutes?`,
+        Premium:      `I have one spot open this week for an introductory call. Interested?`,
+      };
+      const hook = hooks[tone] || hooks.Professional;
+      const cta  = ctaMap[tone]  || ctaMap.Professional;
+      results = {
+        subjectLines: [
+          `Quick question about ${company}'s ${service.toLowerCase()} strategy`,
+          `How ${industry} companies are getting 3x results with ${service}`,
+          `${prospect}, saw something interesting about ${company}`,
+          `The ${service.toLowerCase()} gap most ${industry} companies don't see`,
+          `15 min call? This could be useful for ${company}`,
+        ],
+        emailA: `${hook} — and I noticed an opportunity that most ${industry} companies miss.\n\nWe help businesses like ${company} ${goal.toLowerCase()}.\n\nRecently worked with a similar ${industry} company and delivered results within 60 days.\n\n${cta}\n\nBest,\n[Your Name]`,
+        emailB: `${prospect},\n\nMost ${industry} companies struggle with ${service.toLowerCase()} — not because of effort, but because of approach.\n\nWe've refined a process that helps companies ${goal.toLowerCase()}.\n\nI'd love to show you exactly what we did for a company similar to ${company}.\n\n${cta}\n\n[Your Name]`,
+        followup1: `Hi ${prospect},\n\nJust following up on my last note — wanted to make sure it didn't get buried.\n\n${company} seems like a great fit for what we do. Happy to share a quick case study if helpful.\n\n${cta}\n\n[Your Name]`,
+        followup2: `Hi ${prospect},\n\nI'll keep this brief — last follow-up, I promise.\n\nIf ${service.toLowerCase()} isn't a priority right now, no worries at all.\n\nBut if it ever becomes one, I'd love to be your first call.\n\nWishing you and ${company} the best! 🙂`,
+        linkedin: `Hi ${prospect}! I help ${industry} companies ${goal.toLowerCase()}. Thought there might be a fit with ${company}. Would love to connect and share some ideas!`,
+      };
+    }
+
+    // Render results
+    renderCESubjectLines(results.subjectLines?.join('\n') || '');
+    document.getElementById('ceEmailA').textContent    = results.emailA    || '';
+    document.getElementById('ceEmailB').textContent    = results.emailB    || '';
+    document.getElementById('ceFollowup1').textContent = results.followup1 || '';
+    document.getElementById('ceFollowup2').textContent = results.followup2 || '';
+    document.getElementById('ceLinkedIn').textContent  = results.linkedin  || '';
+
+    showToast('✅ Cold emails generated!', 'success');
+    loadColdEmailHistory();
+
+  } catch(err) {
+    cardIds.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = ''; });
+    showToast('❌ Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.querySelector('.btn-content').textContent = '✉️ Generate Cold Emails';
+  }
+}
+
+
+// ============================================================
+//  COPY OUTPUT HELPER (for new tabs)
+// ============================================================
+function copyOutput(elId, btn) {
+  const text = document.getElementById(elId)?.innerText || '';
+  if (!text) return;
+  function fallback(t) { const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta); }
+  try {
+    if (navigator.clipboard) { navigator.clipboard.writeText(text).catch(() => fallback(text)); }
+    else { fallback(text); }
+    if (btn) { btn.textContent='✓ Copied!'; btn.style.background='#15803d'; setTimeout(()=>{btn.textContent='Copy';btn.style.background='';},2000); }
+  } catch(e) { fallback(text); }
+}
+
+// ============================================================
+//  TAB 2: FIVERR BUYER REQUEST GENERATOR
+// ============================================================
+async function generateFiverrReply() {
+  const request = document.getElementById('fiverrRequest')?.value.trim();
+  if (!request || request.length < 15) { shakeEl(document.getElementById('fiverrRequest')); showToast('❌ Please paste a buyer request first.','error'); return; }
+
+  const gigCat = document.getElementById('fiverrGigCat')?.value || 'General';
+  const level  = document.getElementById('fiverrLevel')?.value  || 'New Seller';
+  const btn    = document.getElementById('fiverrGenerateBtn');
+  const outputDiv  = document.getElementById('fiverrOutput');
+  const outputText = document.getElementById('fiverrOutputText');
+
+  btn.disabled = true; btn.querySelector('.btn-content').textContent = '⏳ Generating...';
+
+  const apiKey = getApiKey();
+  let reply = '';
+
+  try {
+    if (apiKey) {
+      const prompt = `You are an expert Fiverr seller. Write a short, compelling reply to this Fiverr buyer request. Make it feel personal, not template-like. Mention their specific needs. Keep it under 120 words. Do not use "Dear" or "To Whom".
+
+Buyer Request: """${request}"""
+Seller's Gig Category: ${gigCat}
+Seller Level: ${level}
+
+Write a reply that:
+1. Acknowledges their specific requirement in line 1
+2. Briefly mentions relevant experience (1 line)
+3. States delivery time and what they'll get
+4. Ends with a soft call to action
+
+Output ONLY the reply message, nothing else.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.75, maxOutputTokens:400} }) });
+      const data = await resp.json();
+      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    }
+
+    if (!reply) {
+      // Smart simulation
+      await delay(1200);
+      const intros = [
+        `Hi! I noticed you need ${gigCat.toLowerCase()} services and I'd love to help.`,
+        `Hello! Your request for ${gigCat.toLowerCase()} caught my attention — this is exactly what I specialize in.`,
+        `Hi there! I specialize in ${gigCat.toLowerCase()} and your project sounds like a great fit.`,
+      ];
+      const bodies = [
+        `As a ${level} seller with hands-on experience in ${gigCat}, I can deliver exactly what you're looking for — clean, professional, and on time.`,
+        `I've completed 50+ similar projects and know exactly how to handle this efficiently.`,
+        `My work is focused on quality first — I won't deliver until you're 100% satisfied.`,
+      ];
+      const ctas = [
+        `Feel free to message me so we can discuss the details and get started right away!`,
+        `I'm available to start immediately. Let's chat to confirm the requirements!`,
+        `Send me a message and I'll share some samples relevant to your project.`,
+      ];
+      const rand = arr => arr[Math.floor(Math.random()*arr.length)];
+      reply = `${rand(intros)}\n\n${rand(bodies)}\n\n${rand(ctas)}`;
+    }
+
+    outputText.textContent = reply;
+    outputDiv.style.display = 'block';
+    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    showToast('✅ Fiverr reply ready!', 'success');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.querySelector('.btn-content').textContent = '🛒 Generate Buyer Reply';
+  }
+}
+
+// ============================================================
+//  TAB 3: CLIENT MESSAGE WRITER
+// ============================================================
+async function generateClientReply() {
+  const msg  = document.getElementById('clientMsg')?.value.trim();
+  if (!msg || msg.length < 10) { shakeEl(document.getElementById('clientMsg')); showToast('❌ Please paste the client message first.','error'); return; }
+
+  const type  = document.getElementById('clientMsgType')?.value  || 'inquiry';
+  const tone  = document.getElementById('clientMsgTone')?.value  || 'professional';
+  const outputDiv  = document.getElementById('clientMsgOutput');
+  const outputText = document.getElementById('clientMsgOutputText');
+
+  outputText.textContent = '⏳ Writing your reply...';
+  outputDiv.style.display = 'block';
+
+  const apiKey = getApiKey();
+  let reply = '';
+
+  try {
+    if (apiKey) {
+      const prompt = `You are a professional freelancer. Write a reply to the following client message. 
+Message Type: ${type}
+Tone: ${tone}
+Client's Message: """${msg}"""
+
+Write a reply that:
+- Addresses every point the client raised
+- Is ${tone} in tone
+- Is under 150 words
+- Feels human, not robotic or template-like
+- Ends with a clear next step
+
+Output ONLY the reply, nothing else.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:500} }) });
+      const data = await resp.json();
+      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    }
+
+    if (!reply) {
+      await delay(1000);
+      const templates = {
+        inquiry:     `Hi! Thanks for reaching out.\n\nTo answer your questions: I have hands-on experience with exactly the type of project you've described, and I'm confident in delivering great results within your timeline.\n\nI'd be happy to share relevant samples or jump on a quick call to discuss further. What works best for you?`,
+        negotiation: `Hi! Thanks for your message.\n\nI completely understand budget considerations. While my standard rate reflects the quality and timeline I deliver, I'm open to finding a middle ground.\n\nIf we adjust the scope slightly or extend the deadline by a couple of days, I may be able to accommodate your budget. Let me know your thoughts and we can work something out!`,
+        revision:    `Hi! Absolutely, I want to make sure this is perfect for you.\n\nThank you for the detailed feedback — I completely understand what needs to be changed. I'll get started on the revisions right away and send you the updated version within [timeframe].\n\nPlease feel free to share any additional notes so I can get it right this time!`,
+        delay:       `Hi! Thank you for letting me know in advance — I really appreciate that.\n\nI understand completely. Take the time you need and please don't rush on my account. I'll keep the project open on my end, and whenever you're ready to move forward, just send me a message.\n\nLooking forward to working with you!`,
+        complaint:   `Hi! I sincerely apologize for the experience — this is not the standard I hold myself to.\n\nThank you for bringing this to my attention. I want to make this right for you. Please tell me specifically what didn't meet your expectations and I will fix it as a priority, no questions asked.\n\nYour satisfaction is my top concern.`,
+        positive:    `Hi! Thank you so much — this genuinely made my day!\n\nIt was a real pleasure working on this project with you. Your clear communication made everything smoother, and I'm glad the outcome met your expectations.\n\nIf you ever have future projects, I'd love to work together again. Please feel free to reach out anytime!`,
+      };
+      reply = templates[type] || templates.inquiry;
+    }
+
+    outputText.textContent = reply;
+    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    showToast('✅ Client reply ready!', 'success');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error');
+  }
+}
+
+// ============================================================
+//  TAB 4: FOLLOW-UP GENERATOR
+// ============================================================
+async function generateFollowUp() {
+  const context  = document.getElementById('followUpContext')?.value.trim();
+  if (!context || context.length < 10) { shakeEl(document.getElementById('followUpContext')); showToast('❌ Please describe your original proposal first.','error'); return; }
+
+  const followNum  = document.getElementById('followUpNumber')?.value  || '1st';
+  const platform   = document.getElementById('followUpPlatform')?.value || 'Upwork';
+  const outputDiv  = document.getElementById('followUpOutput');
+  const outputText = document.getElementById('followUpOutputText');
+
+  outputText.textContent = '⏳ Crafting follow-up...';
+  outputDiv.style.display = 'block';
+
+  const apiKey = getApiKey();
+  let reply = '';
+
+  try {
+    if (apiKey) {
+      const prompt = `You are a professional freelancer on ${platform}. Write a ${followNum} follow-up message for the following context.
+
+Context: """${context}"""
+
+Rules:
+- This is a ${followNum} follow-up — match the urgency level accordingly
+- Keep it SHORT (under 80 words) — respect their time
+- Do NOT be desperate or pushy
+- Remind them of the value you offer in one line
+- End with ONE clear, easy question or call to action
+- Sound natural and human
+
+Output ONLY the follow-up message.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:300} }) });
+      const data = await resp.json();
+      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    }
+
+    if (!reply) {
+      await delay(900);
+      const msgs = {
+        '1st':  `Hi! I just wanted to follow up on my proposal from a couple of days ago.\n\nI'm still very interested in your project and believe I can deliver exactly what you need. If you have any questions or need any clarification, I'm happy to jump on a quick call.\n\nLooking forward to hearing from you!`,
+        '2nd':  `Hi again! I understand you're probably busy — I just wanted to check in one more time before I close out my availability for this week.\n\nIf the project is still moving forward, I'd love to be part of it. Is there anything specific holding back a decision that I can address?\n\nEither way, thanks for your time!`,
+        'final':`Hi! This will be my last follow-up — I don't want to clutter your inbox.\n\nIf the timing isn't right, that's completely okay. If you do decide to move forward in the future, I'd still be happy to work together.\n\nWishing you all the best with your project! 🙂`,
+      };
+      reply = msgs[followNum] || msgs['1st'];
+    }
+
+    outputText.textContent = reply;
+    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    showToast('✅ Follow-up message ready!', 'success');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message, 'error');
+  }
+}

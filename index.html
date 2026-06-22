@@ -3,8 +3,17 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ProposalIQ – AI-Powered Proposal Intelligence</title>
-<meta name="description" content="ProposalIQ helps freelancers write winning proposals with AI-powered intelligence, reply scoring, scam detection and more."/>
+<title>ProposalIQ – AI Proposal & Cold Email Generator for Freelancers</title>
+<meta name="description" content="ProposalIQ — Free AI tool for freelancers. Generate winning proposals, cold emails, Fiverr replies, client messages & follow-ups. No signup required."/>
+<!-- Open Graph -->
+<meta property="og:title" content="ProposalIQ – AI Proposal & Cold Email Generator for Freelancers"/>
+<meta property="og:description" content="Write winning proposals, cold emails, and client messages in seconds. 100% free. No signup."/>
+<meta property="og:url" content="https://chandan0621.github.io/proposaliq"/>
+<meta property="og:type" content="website"/>
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="ProposalIQ – AI Proposal & Cold Email Generator"/>
+<meta name="twitter:description" content="Free AI tool for freelancers. Proposals, cold emails, client replies & more."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
@@ -249,10 +258,31 @@
       <div class="stat-card"><div class="stat-value gradient-text">Gemini</div><div class="stat-label" id="statLabel4">AI Engine</div></div>
     </section>
 
+    <!-- FEATURE TABS -->
+    <div class="feature-tabs-wrap">
+      <div class="feature-tabs">
+        <button class="feature-tab active" data-tab="proposalGen" onclick="switchFeatureTab('proposalGen')">
+          <span>⚡</span> Proposal Generator
+        </button>
+        <button class="feature-tab" data-tab="fiverrRequest" onclick="switchFeatureTab('fiverrRequest')">
+          <span>🛒</span> Fiverr Buyer Request
+        </button>
+        <button class="feature-tab" data-tab="clientMsg" onclick="switchFeatureTab('clientMsg')">
+          <span>💬</span> Client Message Writer
+        </button>
+        <button class="feature-tab" data-tab="followUp" onclick="switchFeatureTab('followUp')">
+          <span>🔁</span> Follow-up Generator
+        </button>
+        <button class="feature-tab" data-tab="coldEmail" onclick="switchFeatureTab('coldEmail')">
+          <span>✉️</span> Cold Email Generator
+        </button>
+      </div>
+    </div>
+
     <!-- MAIN GRID -->
     <div class="main-grid">
-      <!-- FORM -->
-      <section class="form-panel glass-card">
+      <!-- ===== TAB 1: PROPOSAL GENERATOR (existing) ===== -->
+      <section class="form-panel glass-card" id="tab-proposalGen">
         <div class="panel-header">
           <h2 class="panel-title" id="panelTitleEl">✨ Generate Proposal</h2>
           <span class="panel-badge" id="aiModeBadge">AI Ready</span>
@@ -314,6 +344,289 @@
             </div>
           </div>
           <div class="output-text" id="outputText"></div>
+        </div>
+      </section>
+
+      <!-- ===== TAB 2: FIVERR BUYER REQUEST ===== -->
+      <section class="form-panel glass-card" id="tab-fiverrRequest" style="display:none;">
+        <div class="panel-header">
+          <h2 class="panel-title">🛒 Fiverr Buyer Request Reply</h2>
+          <span class="panel-badge done">Fiverr Mode</span>
+        </div>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Fiverr Buyer Requests ka alag format hota hai. Yahan paste karo aur perfect reply pao.</p>
+        <div class="form-group">
+          <label class="form-label">Paste Buyer Request <span class="required">*</span></label>
+          <textarea class="form-textarea" id="fiverrRequest" placeholder="Paste the Fiverr buyer request here... e.g. 'I need a logo designed for my bakery business. Budget: $30. Deadline: 3 days.'" rows="6"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Gig Category</label>
+            <select class="form-select" id="fiverrGigCat">
+              <option value="">Select your gig...</option>
+              <option>Logo Design</option><option>Web Development</option>
+              <option>Video Editing</option><option>Content Writing</option>
+              <option>SEO / Marketing</option><option>Data Entry</option>
+              <option>Social Media</option><option>App Development</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Fiverr Level</label>
+            <select class="form-select" id="fiverrLevel">
+              <option value="New Seller">New Seller</option>
+              <option value="Level 1">Level 1 Seller</option>
+              <option value="Level 2">Level 2 Seller</option>
+              <option value="Top Rated">Top Rated Seller</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-generate" id="fiverrGenerateBtn" onclick="generateFiverrReply()">
+          <span class="btn-glow"></span>
+          <span class="btn-content">🛒 Generate Buyer Reply</span>
+        </button>
+        <div class="proposal-output" id="fiverrOutput" style="display:none;">
+          <div class="output-header">
+            <span>🛒 Your Fiverr Buyer Reply</span>
+            <div class="output-actions">
+              <button class="output-btn" onclick="copyOutput('fiverrOutputText', this)">Copy</button>
+            </div>
+          </div>
+          <div class="output-text" id="fiverrOutputText"></div>
+        </div>
+      </section>
+
+      <!-- ===== TAB 3: CLIENT MESSAGE WRITER ===== -->
+      <section class="form-panel glass-card" id="tab-clientMsg" style="display:none;">
+        <div class="panel-header">
+          <h2 class="panel-title">💬 Client Message Writer</h2>
+          <span class="panel-badge" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;">New ✨</span>
+        </div>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Client ne kuch message kiya hai? Uska professional reply yahan generate karo.</p>
+        <div class="form-group">
+          <label class="form-label">Client ka Message Paste Karo <span class="required">*</span></label>
+          <textarea class="form-textarea" id="clientMsg" placeholder="e.g. 'Hi, I reviewed your proposal. Can you tell me more about your experience with React? Also, can you finish this in 5 days?'" rows="5"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Message Type</label>
+            <select class="form-select" id="clientMsgType">
+              <option value="inquiry">Client Inquiry (questions pooch raha hai)</option>
+              <option value="negotiation">Price Negotiation (price kam karna chahta hai)</option>
+              <option value="revision">Revision Request (changes chahta hai)</option>
+              <option value="delay">Deadline Extension (more time chahiye)</option>
+              <option value="complaint">Complaint (kuch galat hua)</option>
+              <option value="positive">Positive Feedback (appreciation)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reply Tone</label>
+            <select class="form-select" id="clientMsgTone">
+              <option value="professional">Professional</option>
+              <option value="friendly">Friendly & Warm</option>
+              <option value="firm">Firm & Confident</option>
+              <option value="apologetic">Apologetic & Empathetic</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-generate" onclick="generateClientReply()">
+          <span class="btn-glow"></span>
+          <span class="btn-content">💬 Write Client Reply</span>
+        </button>
+        <div class="proposal-output" id="clientMsgOutput" style="display:none;">
+          <div class="output-header">
+            <span>💬 Your Client Reply</span>
+            <div class="output-actions">
+              <button class="output-btn" onclick="copyOutput('clientMsgOutputText', this)">Copy</button>
+            </div>
+          </div>
+          <div class="output-text" id="clientMsgOutputText"></div>
+        </div>
+      </section>
+
+      <!-- ===== TAB 4: FOLLOW-UP GENERATOR ===== -->
+      <section class="form-panel glass-card" id="tab-followUp" style="display:none;">
+        <div class="panel-header">
+          <h2 class="panel-title">🔁 Follow-up Message Generator</h2>
+          <span class="panel-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;">New ✨</span>
+        </div>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Client ne reply nahi kiya? Smart follow-up messages generate karo jo reply dilwayen.</p>
+        <div class="form-group">
+          <label class="form-label">Original Proposal / Message ka Summary <span class="required">*</span></label>
+          <textarea class="form-textarea" id="followUpContext" placeholder="e.g. 'I sent a proposal for a WordPress website project 3 days ago. Budget was $500. Client viewed but did not reply.'" rows="4"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Follow-up Number</label>
+            <select class="form-select" id="followUpNumber">
+              <option value="1st">1st Follow-up (2-3 din baad)</option>
+              <option value="2nd">2nd Follow-up (1 hafte baad)</option>
+              <option value="final">Final Follow-up (Last try)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Platform</label>
+            <select class="form-select" id="followUpPlatform">
+              <option>Upwork</option>
+              <option>Fiverr</option>
+              <option>Email</option>
+              <option>LinkedIn</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-generate" onclick="generateFollowUp()">
+          <span class="btn-glow"></span>
+          <span class="btn-content">🔁 Generate Follow-up</span>
+        </button>
+        <div class="proposal-output" id="followUpOutput" style="display:none;">
+          <div class="output-header">
+            <span>🔁 Your Follow-up Message</span>
+            <div class="output-actions">
+              <button class="output-btn" onclick="copyOutput('followUpOutputText', this)">Copy</button>
+            </div>
+          </div>
+          <div class="output-text" id="followUpOutputText"></div>
+        </div>
+      </section>
+
+      <!-- ===== TAB 5: COLD EMAIL GENERATOR ===== -->
+      <section class="form-panel glass-card" id="tab-coldEmail" style="display:none;">
+        <div class="panel-header">
+          <h2 class="panel-title">✉️ Cold Email Generator</h2>
+          <span class="panel-badge" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;">New ✨</span>
+        </div>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:20px;">Generate high-converting cold emails, follow-ups & LinkedIn outreach — personalized to your prospect.</p>
+
+        <!-- INPUTS -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Prospect Name <span class="required">*</span></label>
+            <input type="text" class="form-select" id="ceProspectName" placeholder="e.g. Sarah Johnson"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Company Name <span class="required">*</span></label>
+            <input type="text" class="form-select" id="ceCompanyName" placeholder="e.g. Acme Corp"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Industry</label>
+            <select class="form-select" id="ceIndustry">
+              <option value="SaaS">SaaS / Software</option>
+              <option value="E-commerce">E-commerce</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Finance">Finance / Fintech</option>
+              <option value="Real Estate">Real Estate</option>
+              <option value="Marketing Agency">Marketing Agency</option>
+              <option value="Retail">Retail</option>
+              <option value="Education">Education</option>
+              <option value="Consulting">Consulting</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Service You Offer <span class="required">*</span></label>
+            <input type="text" class="form-select" id="ceService" placeholder="e.g. SEO, Web Design, Copywriting"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display:flex;justify-content:space-between;">
+            <span>Your Goal / Value Proposition <span class="required">*</span></span>
+            <span class="ce-char-counter" id="ceGoalCounter">0 / 200</span>
+          </label>
+          <textarea class="form-textarea" id="ceGoal" placeholder="e.g. Help them increase organic traffic by 3x in 90 days using proven SEO strategies" rows="3" maxlength="200" oninput="updateCharCounter('ceGoal','ceGoalCounter',200)"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Tone</label>
+          <div class="tone-pills" id="ceTonePills">
+            <button class="tone-pill active" data-tone="Professional" onclick="setCETone(this)">Professional</button>
+            <button class="tone-pill" data-tone="Friendly" onclick="setCETone(this)">Friendly</button>
+            <button class="tone-pill" data-tone="Direct" onclick="setCETone(this)">Direct</button>
+            <button class="tone-pill" data-tone="Premium" onclick="setCETone(this)">Premium</button>
+          </div>
+        </div>
+
+        <button class="btn-generate" id="ceGenerateBtn" onclick="generateColdEmail()">
+          <span class="btn-glow"></span>
+          <span class="btn-content">✉️ Generate Cold Emails</span>
+        </button>
+
+        <!-- OUTPUTS -->
+        <div id="ceOutputSection" style="display:none;margin-top:24px;">
+
+          <!-- Subject Lines -->
+          <div class="ce-output-card">
+            <div class="ce-output-header">
+              <span class="ce-output-title">📬 5 High-Converting Subject Lines</span>
+              <button class="output-btn" onclick="copyCESection('ceSubjectLines',this)">Copy</button>
+            </div>
+            <div class="ce-output-body" id="ceSubjectLines"></div>
+          </div>
+
+          <!-- Email A -->
+          <div class="ce-output-card">
+            <div class="ce-output-header">
+              <span class="ce-output-title">✉️ Cold Email — Version A</span>
+              <button class="output-btn" onclick="copyCESection('ceEmailA',this)">Copy</button>
+            </div>
+            <div class="ce-output-body" id="ceEmailA"></div>
+          </div>
+
+          <!-- Email B -->
+          <div class="ce-output-card">
+            <div class="ce-output-header">
+              <span class="ce-output-title">✉️ Cold Email — Version B</span>
+              <button class="output-btn" onclick="copyCESection('ceEmailB',this)">Copy</button>
+            </div>
+            <div class="ce-output-body" id="ceEmailB"></div>
+          </div>
+
+          <!-- Follow-up 1 -->
+          <div class="ce-output-card">
+            <div class="ce-output-header">
+              <span class="ce-output-title">🔁 Follow-up Email #1</span>
+              <button class="output-btn" onclick="copyCESection('ceFollowup1',this)">Copy</button>
+            </div>
+            <div class="ce-output-body" id="ceFollowup1"></div>
+          </div>
+
+          <!-- Follow-up 2 -->
+          <div class="ce-output-card">
+            <div class="ce-output-header">
+              <span class="ce-output-title">🔁 Follow-up Email #2</span>
+              <button class="output-btn" onclick="copyCESection('ceFollowup2',this)">Copy</button>
+            </div>
+            <div class="ce-output-body" id="ceFollowup2"></div>
+          </div>
+
+          <!-- LinkedIn -->
+          <div class="ce-output-card">
+            <div class="ce-output-header">
+              <span class="ce-output-title">💼 LinkedIn Outreach Message</span>
+              <button class="output-btn" onclick="copyCESection('ceLinkedIn',this)">Copy</button>
+            </div>
+            <div class="ce-output-body" id="ceLinkedIn"></div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="ce-action-btns">
+            <button class="ce-action-btn ce-copy-all" onclick="copyAllColdEmails()">
+              📋 Copy All
+            </button>
+            <button class="ce-action-btn ce-export" onclick="exportColdEmailsTXT()">
+              📥 Export TXT
+            </button>
+            <button class="ce-action-btn ce-save" onclick="saveColdEmailHistory()">
+              💾 Save
+            </button>
+          </div>
+        </div>
+
+        <!-- RECENT HISTORY -->
+        <div id="ceHistorySection" style="margin-top:28px;display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-weight:700;font-size:14px;color:#1a1523;">🕐 Recent History</span>
+            <button class="output-btn" onclick="clearColdEmailHistory()" style="font-size:11px;">Clear</button>
+          </div>
+          <div id="ceHistoryList"></div>
         </div>
       </section>
 
@@ -413,6 +726,24 @@
   </div>
 </div>
 
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal-card glass-card">
+    <button class="modal-close" id="profileClose">✕</button>
+    <div class="modal-icon">👤</div>
+    <h2>My Profile</h2>
+    <div style="text-align:left; background:rgba(255,255,255,0.05); padding:16px; border-radius:12px; margin:16px 0; font-size:14px; line-height:1.8;">
+      <div style="margin-bottom:8px;"><strong>Name:</strong> <span id="profileNameVal">Guest</span></div>
+      <div style="margin-bottom:8px;"><strong>Email:</strong> <span id="profileEmailVal">guest@proposaliq.app</span></div>
+      <div style="margin-bottom:8px;"><strong>Account Plan:</strong> <span id="profilePlanVal" style="color:#10b981; font-weight:bold;">Pro Access</span></div>
+      <div><strong>Status:</strong> <span style="color:#10b981; font-weight:bold;">Active</span></div>
+    </div>
+    <button class="btn-generate" onclick="document.getElementById('profileModal').classList.remove('open')">
+      <span class="btn-content">Close Profile</span>
+    </button>
+  </div>
+</div>
+
 <!-- TEMPLATE EDITOR MODAL -->
 <div class="modal-overlay" id="templateEditorModal">
   <div class="tpl-editor-modal">
@@ -453,6 +784,31 @@
   });
   document.addEventListener('click', () => {
     document.getElementById('userDropdown').classList.remove('open');
+  });
+
+  // Profile click handler
+  document.getElementById('dropdownProfile').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('userDropdown').classList.remove('open');
+    if (window.currentUser && window.currentUser()) {
+      const user = window.currentUser();
+      document.getElementById('profileNameVal').textContent = user.name || 'User';
+      document.getElementById('profileEmailVal').textContent = user.isGuest ? 'Free Demo Mode' : (user.email || '');
+      document.getElementById('profilePlanVal').textContent = user.plan === 'pro' ? 'Pro Access' : (user.plan === 'trial' ? 'Pro Trial' : 'Free Plan');
+    }
+    document.getElementById('profileModal').classList.add('open');
+  });
+
+  document.getElementById('profileClose').addEventListener('click', function() {
+    document.getElementById('profileModal').classList.remove('open');
+  });
+
+  // Settings click handler
+  document.getElementById('dropdownSettings').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('userDropdown').classList.remove('open');
+    document.getElementById('apiKeyInput').value = localStorage.getItem('proposaliq_gemini_key') || '';
+    document.getElementById('settingsModal').classList.add('open');
   });
   // Password eye toggles
   ['loginEye','signupEye'].forEach(id => {
