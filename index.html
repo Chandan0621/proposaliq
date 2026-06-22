@@ -243,19 +243,27 @@
   </header>
 
   <main class="content-area">
+
     <!-- HERO -->
     <section class="hero-section">
-      <div class="hero-badge" id="heroBadgeEl">✦ AI-Powered · Built for Freelancers Worldwide</div>
-      <h1 class="hero-heading"><span id="heroHeadingLine">Write Proposals That</span><br/><span class="gradient-text" id="heroHighlightSpan">Get Replies</span></h1>
-      <p class="hero-sub" id="heroSubText">AI-powered proposal intelligence for freelancers worldwide.</p>
-    </section>
-
-    <!-- STATS -->
-    <section class="stats-row">
-      <div class="stat-card"><div class="stat-value gradient-text">100%</div><div class="stat-label" id="statLabel1">Free to Use</div></div>
-      <div class="stat-card"><div class="stat-value gradient-text">80+</div><div class="stat-label" id="statLabel2">Built-in Templates</div></div>
-      <div class="stat-card"><div class="stat-value gradient-text">1-Click</div><div class="stat-label" id="statLabel3">AI Proposals</div></div>
-      <div class="stat-card"><div class="stat-value gradient-text">Gemini</div><div class="stat-label" id="statLabel4">AI Engine</div></div>
+      <div class="hero-inner">
+        <div class="hero-eyebrow">✦ Powered by Gemini AI</div>
+        <h1 class="hero-heading">
+          Write Proposals That<br/><span class="gradient-text">Get Replies</span>
+        </h1>
+        <p class="hero-sub">Generate proposals, analyze jobs, detect scams, and create professional follow-ups in minutes.</p>
+        <div class="hero-ctas">
+          <button class="hero-cta-primary" onclick="switchFeatureTab('proposalGen'); document.getElementById('jobPost').focus();">⚡ Generate Proposal</button>
+          <button class="hero-cta-secondary" onclick="switchFeatureTab('proposalGen'); document.getElementById('jobPost').value='Looking for a skilled web developer to build a modern e-commerce website using React and Node.js. Budget: $800–1200. Timeline: 3 weeks. Must have portfolio.'; document.getElementById('generateBtn').click();">▶ Try Demo</button>
+        </div>
+        <div class="hero-tools-row">
+          <span class="hero-tool-pill">🛒 Fiverr Replies</span>
+          <span class="hero-tool-pill">💬 Client Messages</span>
+          <span class="hero-tool-pill">🔁 Follow-ups</span>
+          <span class="hero-tool-pill">✉️ Cold Emails</span>
+          <span class="hero-tool-pill">🛡️ Scam Detection</span>
+        </div>
+      </div>
     </section>
 
     <!-- FEATURE TABS -->

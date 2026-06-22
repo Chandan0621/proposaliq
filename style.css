@@ -220,54 +220,118 @@ body {
   flex: 1;
 }
 
-/* ---- HERO ---- */
+/* ---- HERO (Clean SaaS) ---- */
 .hero-section {
-  text-align: center;
-  padding: 32px 20px 20px;
+  padding: 40px 0 28px;
 }
-.hero-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(59,130,246,0.1));
-  border: 1px solid rgba(124,58,237,0.2);
+.hero-inner {
+  max-width: 640px;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(124,58,237,0.07);
+  border: 1px solid rgba(124,58,237,0.18);
   color: var(--purple);
-  padding: 6px 18px; border-radius: 50px;
-  font-size: 12px; font-weight: 600;
-  margin-bottom: 18px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 20px;
 }
 .hero-heading {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800; line-height: 1.18;
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
+  font-size: clamp(1.85rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: 14px;
 }
 .gradient-text {
   background: linear-gradient(135deg, var(--purple), var(--blue));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .hero-sub {
-  font-size: 16px; color: var(--text-secondary); font-weight: 400;
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  line-height: 1.65;
+  margin-bottom: 24px;
+  max-width: 520px;
 }
 
-/* ---- STATS ---- */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 14px;
-  margin: 22px 0;
+/* CTA Buttons */
+.hero-ctas {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
 }
-.stat-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  text-align: center;
-  transition: transform var(--transition), box-shadow var(--transition);
+.hero-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.35);
 }
-.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.stat-value { font-size: 26px; font-weight: 800; }
-.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+.hero-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124,58,237,0.45);
+}
+.hero-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: #fff;
+  color: var(--text-primary);
+  border: 1.5px solid #e5e3ef;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.hero-cta-secondary:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+  background: rgba(124,58,237,0.04);
+  transform: translateY(-1px);
+}
+
+/* Tool Pills */
+.hero-tools-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hero-tool-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: #fff;
+  border: 1px solid #e5e3ef;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
 
 /* ---- GLASS CARD ---- */
 .glass-card {
@@ -1285,6 +1349,13 @@ body {
   .tpl-doc-canvas { padding: 16px 8px; }
   .feature-tabs { gap: 6px; }
   .feature-tab { font-size: 12px; padding: 8px 12px; }
+
+  /* Hero mobile */
+  .hero-section { padding: 28px 0 20px; }
+  .hero-inner { max-width: 100%; }
+  .hero-ctas { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .hero-cta-primary, .hero-cta-secondary { width: 100%; justify-content: center; }
+  .hero-tools-row { gap: 6px; }
 }
 
 /* ============================================================
