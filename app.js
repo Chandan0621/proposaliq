@@ -46,6 +46,11 @@ document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.add('active');
     sidebar.classList.remove('open');
     sidebarOverlay.classList.remove('open');
+    
+    const tabId = item.getAttribute('data-tab');
+    if (tabId) {
+      switchFeatureTab(tabId);
+    }
   });
 });
 
@@ -606,6 +611,15 @@ function switchFeatureTab(tabId) {
 
   const analytics = document.querySelector('.analytics-panel');
   if (analytics) analytics.style.display = tabId === 'proposalGen' ? '' : 'none';
+
+  // Update sidebar active link
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('data-tab') === tabId) {
+      n.classList.add('active');
+    } else if (n.getAttribute('data-tab')) {
+      n.classList.remove('active');
+    }
+  });
 
   // Load history when switching to cold email tab
   if (tabId === 'coldEmail') loadColdEmailHistory();
