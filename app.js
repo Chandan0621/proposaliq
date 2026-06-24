@@ -179,10 +179,22 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
       document.getElementById('analysisBadge').textContent = '🤖 Gemini AI';
       document.getElementById('analysisBadge').className = 'panel-badge done';
     } else {
-      await delay(1800);
-      result = simulateAnalysis(jobPost, skill, exp, tone, platform);
-      document.getElementById('analysisBadge').textContent = '⚡ Simulated';
-      document.getElementById('analysisBadge').className = 'panel-badge';
+      const responseData = await callBackendAI('proposal', { jobPost, skill, exp, tone, platform });
+      if (responseData) {
+        result = responseData.data;
+        if (responseData.source === 'gemini') {
+          document.getElementById('analysisBadge').textContent = '🤖 Gemini AI';
+          document.getElementById('analysisBadge').className = 'panel-badge done';
+        } else {
+          document.getElementById('analysisBadge').textContent = '⚡ Simulated';
+          document.getElementById('analysisBadge').className = 'panel-badge';
+        }
+      } else {
+        await delay(1800);
+        result = simulateAnalysis(jobPost, skill, exp, tone, platform);
+        document.getElementById('analysisBadge').textContent = '⚡ Simulated (Fallback)';
+        document.getElementById('analysisBadge').className = 'panel-badge';
+      }
     }
     renderResults(result);
   } catch (err) {
@@ -259,6 +271,26 @@ CRITICAL COPYWRITING GUIDELINES FOR THE "proposal" FIELD:
   if (!jsonMatch) throw new Error('Could not parse AI response');
 
   return JSON.parse(jsonMatch[0]);
+}
+
+// ---- CALL BACKEND SERVERLESS API ----
+async function callBackendAI(type, payload) {
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, payload })
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
+        return data;
+      }
+    }
+  } catch (e) {
+    console.warn('Backend call failed:', e);
+  }
+  return null;
 }
 
 // ---- RENDER RESULTS ----
@@ -677,6 +709,11 @@ Output ONLY the reply message, nothing else.`;
       const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.75, maxOutputTokens:400} }) });
       const data = await resp.json();
       reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    } else {
+      const responseData = await callBackendAI('fiverr', { request, gigCat, level });
+      if (responseData) {
+        reply = responseData.reply;
+      }
     }
 
     if (!reply) {
@@ -749,6 +786,11 @@ Output ONLY the reply, nothing else.`;
       const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:500} }) });
       const data = await resp.json();
       reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    } else {
+      const responseData = await callBackendAI('client', { msg, type, tone });
+      if (responseData) {
+        reply = responseData.reply;
+      }
     }
 
     if (!reply) {
@@ -810,6 +852,11 @@ Output ONLY the follow-up message.`;
       const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:300} }) });
       const data = await resp.json();
       reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    } else {
+      const responseData = await callBackendAI('followup', { context, followNum, platform });
+      if (responseData) {
+        reply = responseData.reply;
+      }
     }
 
     if (!reply) {
@@ -1065,6 +1112,11 @@ Rules for ALL emails:
       if (jsonMatch) {
         results = JSON.parse(jsonMatch[0]);
       }
+    } else {
+      const responseData = await callBackendAI('coldemail', { prospect, company, industry, service, goal, tone });
+      if (responseData) {
+        results = responseData.data;
+      }
     }
 
     // Smart simulation fallback
@@ -1120,209 +1172,3 @@ Rules for ALL emails:
   }
 }
 
-
-// ============================================================
-//  COPY OUTPUT HELPER (for new tabs)
-// ============================================================
-function copyOutput(elId, btn) {
-  const text = document.getElementById(elId)?.innerText || '';
-  if (!text) return;
-  function fallback(t) { const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta); }
-  try {
-    if (navigator.clipboard) { navigator.clipboard.writeText(text).catch(() => fallback(text)); }
-    else { fallback(text); }
-    if (btn) { btn.textContent='✓ Copied!'; btn.style.background='#15803d'; setTimeout(()=>{btn.textContent='Copy';btn.style.background='';},2000); }
-  } catch(e) { fallback(text); }
-}
-
-// ============================================================
-//  TAB 2: FIVERR BUYER REQUEST GENERATOR
-// ============================================================
-async function generateFiverrReply() {
-  const request = document.getElementById('fiverrRequest')?.value.trim();
-  if (!request || request.length < 15) { shakeEl(document.getElementById('fiverrRequest')); showToast('❌ Please paste a buyer request first.','error'); return; }
-
-  const gigCat = document.getElementById('fiverrGigCat')?.value || 'General';
-  const level  = document.getElementById('fiverrLevel')?.value  || 'New Seller';
-  const btn    = document.getElementById('fiverrGenerateBtn');
-  const outputDiv  = document.getElementById('fiverrOutput');
-  const outputText = document.getElementById('fiverrOutputText');
-
-  btn.disabled = true; btn.querySelector('.btn-content').textContent = '⏳ Generating...';
-
-  const apiKey = getApiKey();
-  let reply = '';
-
-  try {
-    if (apiKey) {
-      const prompt = `You are an expert Fiverr seller. Write a short, compelling reply to this Fiverr buyer request. Make it feel personal, not template-like. Mention their specific needs. Keep it under 120 words. Do not use "Dear" or "To Whom".
-
-Buyer Request: """${request}"""
-Seller's Gig Category: ${gigCat}
-Seller Level: ${level}
-
-Write a reply that:
-1. Acknowledges their specific requirement in line 1
-2. Briefly mentions relevant experience (1 line)
-3. States delivery time and what they'll get
-4. Ends with a soft call to action
-
-Output ONLY the reply message, nothing else.`;
-
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.75, maxOutputTokens:400} }) });
-      const data = await resp.json();
-      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    }
-
-    if (!reply) {
-      // Smart simulation
-      await delay(1200);
-      const intros = [
-        `Hi! I noticed you need ${gigCat.toLowerCase()} services and I'd love to help.`,
-        `Hello! Your request for ${gigCat.toLowerCase()} caught my attention — this is exactly what I specialize in.`,
-        `Hi there! I specialize in ${gigCat.toLowerCase()} and your project sounds like a great fit.`,
-      ];
-      const bodies = [
-        `As a ${level} seller with hands-on experience in ${gigCat}, I can deliver exactly what you're looking for — clean, professional, and on time.`,
-        `I've completed 50+ similar projects and know exactly how to handle this efficiently.`,
-        `My work is focused on quality first — I won't deliver until you're 100% satisfied.`,
-      ];
-      const ctas = [
-        `Feel free to message me so we can discuss the details and get started right away!`,
-        `I'm available to start immediately. Let's chat to confirm the requirements!`,
-        `Send me a message and I'll share some samples relevant to your project.`,
-      ];
-      const rand = arr => arr[Math.floor(Math.random()*arr.length)];
-      reply = `${rand(intros)}\n\n${rand(bodies)}\n\n${rand(ctas)}`;
-    }
-
-    outputText.textContent = reply;
-    outputDiv.style.display = 'block';
-    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
-    showToast('✅ Fiverr reply ready!', 'success');
-  } catch(e) {
-    showToast('❌ Error: ' + e.message, 'error');
-  } finally {
-    btn.disabled = false; btn.querySelector('.btn-content').textContent = '🛒 Generate Buyer Reply';
-  }
-}
-
-// ============================================================
-//  TAB 3: CLIENT MESSAGE WRITER
-// ============================================================
-async function generateClientReply() {
-  const msg  = document.getElementById('clientMsg')?.value.trim();
-  if (!msg || msg.length < 10) { shakeEl(document.getElementById('clientMsg')); showToast('❌ Please paste the client message first.','error'); return; }
-
-  const type  = document.getElementById('clientMsgType')?.value  || 'inquiry';
-  const tone  = document.getElementById('clientMsgTone')?.value  || 'professional';
-  const outputDiv  = document.getElementById('clientMsgOutput');
-  const outputText = document.getElementById('clientMsgOutputText');
-
-  outputText.textContent = '⏳ Writing your reply...';
-  outputDiv.style.display = 'block';
-
-  const apiKey = getApiKey();
-  let reply = '';
-
-  try {
-    if (apiKey) {
-      const prompt = `You are a professional freelancer. Write a reply to the following client message. 
-Message Type: ${type}
-Tone: ${tone}
-Client's Message: """${msg}"""
-
-Write a reply that:
-- Addresses every point the client raised
-- Is ${tone} in tone
-- Is under 150 words
-- Feels human, not robotic or template-like
-- Ends with a clear next step
-
-Output ONLY the reply, nothing else.`;
-
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:500} }) });
-      const data = await resp.json();
-      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    }
-
-    if (!reply) {
-      await delay(1000);
-      const templates = {
-        inquiry:     `Hi! Thanks for reaching out.\n\nTo answer your questions: I have hands-on experience with exactly the type of project you've described, and I'm confident in delivering great results within your timeline.\n\nI'd be happy to share relevant samples or jump on a quick call to discuss further. What works best for you?`,
-        negotiation: `Hi! Thanks for your message.\n\nI completely understand budget considerations. While my standard rate reflects the quality and timeline I deliver, I'm open to finding a middle ground.\n\nIf we adjust the scope slightly or extend the deadline by a couple of days, I may be able to accommodate your budget. Let me know your thoughts and we can work something out!`,
-        revision:    `Hi! Absolutely, I want to make sure this is perfect for you.\n\nThank you for the detailed feedback — I completely understand what needs to be changed. I'll get started on the revisions right away and send you the updated version within [timeframe].\n\nPlease feel free to share any additional notes so I can get it right this time!`,
-        delay:       `Hi! Thank you for letting me know in advance — I really appreciate that.\n\nI understand completely. Take the time you need and please don't rush on my account. I'll keep the project open on my end, and whenever you're ready to move forward, just send me a message.\n\nLooking forward to working with you!`,
-        complaint:   `Hi! I sincerely apologize for the experience — this is not the standard I hold myself to.\n\nThank you for bringing this to my attention. I want to make this right for you. Please tell me specifically what didn't meet your expectations and I will fix it as a priority, no questions asked.\n\nYour satisfaction is my top concern.`,
-        positive:    `Hi! Thank you so much — this genuinely made my day!\n\nIt was a real pleasure working on this project with you. Your clear communication made everything smoother, and I'm glad the outcome met your expectations.\n\nIf you ever have future projects, I'd love to work together again. Please feel free to reach out anytime!`,
-      };
-      reply = templates[type] || templates.inquiry;
-    }
-
-    outputText.textContent = reply;
-    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
-    showToast('✅ Client reply ready!', 'success');
-  } catch(e) {
-    showToast('❌ Error: ' + e.message, 'error');
-  }
-}
-
-// ============================================================
-//  TAB 4: FOLLOW-UP GENERATOR
-// ============================================================
-async function generateFollowUp() {
-  const context  = document.getElementById('followUpContext')?.value.trim();
-  if (!context || context.length < 10) { shakeEl(document.getElementById('followUpContext')); showToast('❌ Please describe your original proposal first.','error'); return; }
-
-  const followNum  = document.getElementById('followUpNumber')?.value  || '1st';
-  const platform   = document.getElementById('followUpPlatform')?.value || 'Upwork';
-  const outputDiv  = document.getElementById('followUpOutput');
-  const outputText = document.getElementById('followUpOutputText');
-
-  outputText.textContent = '⏳ Crafting follow-up...';
-  outputDiv.style.display = 'block';
-
-  const apiKey = getApiKey();
-  let reply = '';
-
-  try {
-    if (apiKey) {
-      const prompt = `You are a professional freelancer on ${platform}. Write a ${followNum} follow-up message for the following context.
-
-Context: """${context}"""
-
-Rules:
-- This is a ${followNum} follow-up — match the urgency level accordingly
-- Keep it SHORT (under 80 words) — respect their time
-- Do NOT be desperate or pushy
-- Remind them of the value you offer in one line
-- End with ONE clear, easy question or call to action
-- Sound natural and human
-
-Output ONLY the follow-up message.`;
-
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:300} }) });
-      const data = await resp.json();
-      reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    }
-
-    if (!reply) {
-      await delay(900);
-      const msgs = {
-        '1st':  `Hi! I just wanted to follow up on my proposal from a couple of days ago.\n\nI'm still very interested in your project and believe I can deliver exactly what you need. If you have any questions or need any clarification, I'm happy to jump on a quick call.\n\nLooking forward to hearing from you!`,
-        '2nd':  `Hi again! I understand you're probably busy — I just wanted to check in one more time before I close out my availability for this week.\n\nIf the project is still moving forward, I'd love to be part of it. Is there anything specific holding back a decision that I can address?\n\nEither way, thanks for your time!`,
-        'final':`Hi! This will be my last follow-up — I don't want to clutter your inbox.\n\nIf the timing isn't right, that's completely okay. If you do decide to move forward in the future, I'd still be happy to work together.\n\nWishing you all the best with your project! 🙂`,
-      };
-      reply = msgs[followNum] || msgs['1st'];
-    }
-
-    outputText.textContent = reply;
-    outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
-    showToast('✅ Follow-up message ready!', 'success');
-  } catch(e) {
-    showToast('❌ Error: ' + e.message, 'error');
-  }
-}
