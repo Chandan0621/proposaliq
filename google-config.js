@@ -1,8 +1,8 @@
 // ============================================
 //  google-config.js
-//  Apna Google Client ID yahan paste karo
+//  Paste your Google Client ID here
 //  Setup: console.cloud.google.com (2 min, free)
 // ============================================
 
-const GOOGLE_CLIENT_ID = "";  // <-- Google client ID yahan paste karo
-const GOOGLE_SHEET_WEBAPP_URL = "";  // <-- Google Sheets Apps Script URL yahan paste karo
+const GOOGLE_CLIENT_ID = "";  // <-- Paste your Google client ID here
+const GOOGLE_SHEET_WEBAPP_URL = "";  // <-- Paste your Google Sheets Apps Script URL here

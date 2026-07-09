@@ -108,8 +108,30 @@ document.getElementById('clearApiKeyBtn').addEventListener('click', () => {
 
 // ---- UPGRADE MODAL ----
 const upgradeModal = document.getElementById('upgradeModal');
-document.getElementById('upgradeSidebarBtn').addEventListener('click', () => upgradeModal.classList.add('open'));
-document.getElementById('headerUpgradeBtn')?.addEventListener('click', () => upgradeModal.classList.add('open'));
+
+function openUpgradeModal() {
+  const trialBtn = document.getElementById('modalStartTrialBtn');
+  const buyBtn = document.getElementById('modalBuyProBtn');
+  if (upgradeModal && trialBtn && buyBtn) {
+    const user = (typeof currentUserData !== 'undefined' && currentUserData) ? currentUserData : { plan: 'free' };
+    if (user.plan === 'trial') {
+      trialBtn.style.display = 'none';
+      buyBtn.style.display = 'block';
+    } else if (user.plan === 'pro') {
+      trialBtn.style.display = 'none';
+      buyBtn.style.display = 'none';
+      showToast('🎉 You already have Pro Access!', 'success');
+      return;
+    } else {
+      trialBtn.style.display = 'block';
+      buyBtn.style.display = 'none';
+    }
+    upgradeModal.classList.add('open');
+  }
+}
+
+document.getElementById('upgradeSidebarBtn').addEventListener('click', openUpgradeModal);
+document.getElementById('headerUpgradeBtn')?.addEventListener('click', openUpgradeModal);
 document.getElementById('modalClose').addEventListener('click', () => upgradeModal.classList.remove('open'));
 upgradeModal.addEventListener('click', e => { if (e.target === upgradeModal) upgradeModal.classList.remove('open'); });
 
@@ -672,13 +694,12 @@ function switchFeatureTab(tabId) {
   if (analytics) analytics.style.display = tabId === 'proposalGen' ? '' : 'none';
 
   // Update sidebar active link
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.getAttribute('data-tab') === tabId) {
-      n.classList.add('active');
-    } else if (n.getAttribute('data-tab')) {
-      n.classList.remove('active');
-    }
-  });
+  const activeNav = document.querySelector('.nav-item.active');
+  if (!activeNav || activeNav.getAttribute('data-tab') !== tabId) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const targetNav = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+    if (targetNav) targetNav.classList.add('active');
+  }
 
   // Load history when switching to cold email tab
   if (tabId === 'coldEmail') loadColdEmailHistory();

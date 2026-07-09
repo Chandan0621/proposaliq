@@ -29,24 +29,13 @@
 
   gtag('config', 'G-CL1K3Y468J');
 </script>
-<style>
-  /* Completely Free & Open Access UI Cleanup */
-  .auth-overlay,
-  .sidebar-upgrade,
-  .btn-header-upgrade,
-  .trial-badge,
-  .user-plan,
-  #logoutBtn {
-    display: none !important;
-  }
-</style>
 </head>
 <body>
 
 <!-- ============================
      AUTH OVERLAY
      ============================ -->
-<div class="auth-overlay" id="authOverlay">
+<div class="auth-overlay" id="authOverlay" style="display: none;">
   <div class="auth-left">
     <div class="auth-brand">
       <div class="auth-logo-icon">WS</div>
@@ -184,8 +173,8 @@
     <a href="#" class="nav-item" data-tab="followUp"><span class="nav-icon">🔁</span> Follow-up Generator</a>
     <a href="#" class="nav-item" data-tab="coldEmail"><span class="nav-icon">✉️</span> Cold Email Generator</a>
     <div class="nav-section-label">Tools</div>
-    <a href="#" class="nav-item"><span class="nav-icon">🛡️</span> Scam Detector</a>
-    <a href="#" class="nav-item"><span class="nav-icon">💰</span> Price Advisor</a>
+    <a href="#" class="nav-item" data-tab="proposalGen"><span class="nav-icon">🛡️</span> Scam Detector</a>
+    <a href="#" class="nav-item" data-tab="proposalGen"><span class="nav-icon">💰</span> Price Advisor</a>
     <a href="#" class="nav-item"><span class="nav-icon">🔖</span> Saved Proposals</a>
     <a href="#" class="nav-item"><span class="nav-icon">📋</span> History</a>
     <a href="https://chromewebstore.google.com/" target="_blank" class="nav-item" style="color: #10b981; font-weight: 700;"><span class="nav-icon">🔌</span> Chrome Extension</a>
@@ -227,7 +216,6 @@
       <div class="header-overflow-btn" id="headerOverflowBtn" title="More options" style="position: relative; margin-left: 8px;">⋯
         <div class="header-overflow-menu" id="headerOverflowMenu">
           <a href="https://chromewebstore.google.com/" target="_blank" class="overflow-item">🔌 Chrome Extension</a>
-          <button class="overflow-item" id="langToggleBtn">🌐 Switch to हिंदी</button>
           <hr class="dropdown-divider"/>
           <button class="overflow-item" id="overflowSettings">⚙️ API Key Settings</button>
         </div>
@@ -265,36 +253,14 @@
           <button class="hero-cta-primary" onclick="switchFeatureTab('proposalGen'); document.getElementById('jobPost').focus();">⚡ Generate Proposal</button>
           <button class="hero-cta-secondary" onclick="switchFeatureTab('proposalGen'); document.getElementById('jobPost').value='Looking for a skilled web developer to build a modern e-commerce website using React and Node.js. Budget: $800–1200. Timeline: 3 weeks. Must have portfolio.'; document.getElementById('generateBtn').click();">▶ Try Demo</button>
         </div>
-        <div class="hero-tools-row">
-          <span class="hero-tool-pill">🛒 Fiverr Replies</span>
-          <span class="hero-tool-pill">💬 Client Messages</span>
-          <span class="hero-tool-pill">🔁 Follow-ups</span>
-          <span class="hero-tool-pill">✉️ Cold Emails</span>
-          <span class="hero-tool-pill">🛡️ Scam Detection</span>
+        <div class="hero-shortcuts">
+          <span class="hero-shortcut-label">Quick Actions:</span>
+          <button class="hero-shortcut-btn" onclick="switchFeatureTab('fiverrRequest')">🛒 Fiverr Request</button>
+          <button class="hero-shortcut-btn" onclick="switchFeatureTab('clientMsg')">💬 Client Message</button>
+          <button class="hero-shortcut-btn" onclick="switchFeatureTab('coldEmail')">✉️ Cold Email</button>
         </div>
       </div>
     </section>
-
-    <!-- FEATURE TABS -->
-    <div class="feature-tabs-wrap">
-      <div class="feature-tabs">
-        <button class="feature-tab active" data-tab="proposalGen" onclick="switchFeatureTab('proposalGen')">
-          <span>⚡</span> Proposal Generator
-        </button>
-        <button class="feature-tab" data-tab="fiverrRequest" onclick="switchFeatureTab('fiverrRequest')">
-          <span>🛒</span> Fiverr Buyer Request
-        </button>
-        <button class="feature-tab" data-tab="clientMsg" onclick="switchFeatureTab('clientMsg')">
-          <span>💬</span> Client Message Writer
-        </button>
-        <button class="feature-tab" data-tab="followUp" onclick="switchFeatureTab('followUp')">
-          <span>🔁</span> Follow-up Generator
-        </button>
-        <button class="feature-tab" data-tab="coldEmail" onclick="switchFeatureTab('coldEmail')">
-          <span>✉️</span> Cold Email Generator
-        </button>
-      </div>
-    </div>
 
     <!-- MAIN GRID -->
     <div class="main-grid">
@@ -736,8 +702,8 @@
       <div style="background: #10b981; color: white; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: bold; margin-top: 4px;">LAUNCH SPECIAL 85% OFF</div>
     </div>
     <div style="display: flex; flex-direction: column; gap: 10px; margin-top:1.5rem; align-items: center; width: 100%;">
-      <button class="btn-generate start-trial-btn" style="width: 100%;"><span class="btn-glow"></span><span class="btn-content">🚀 Start 7-Day Free Trial</span></button>
-      <button class="btn-generate buy-pro-btn" style="background: transparent; border: none; color: var(--purple); font-size: 13px; font-weight: 600; text-decoration: underline; cursor: pointer; box-shadow: none; padding: 4px; margin-top: 4px;"><span class="btn-content">Or buy Pro plan directly ($2.99/mo)</span></button>
+      <button class="btn-generate start-trial-btn" id="modalStartTrialBtn" style="width: 100%;"><span class="btn-glow"></span><span class="btn-content">🚀 Start 7-Day Free Trial</span></button>
+      <button class="btn-generate buy-pro-btn" id="modalBuyProBtn" style="width: 100%; display: none;"><span class="btn-glow"></span><span class="btn-content">💳 Subscribe to Pro ($2.99/mo)</span></button>
     </div>
     <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px;" id="trialNoteEl">No credit card required for trial · Cancel anytime</p>
   </div>

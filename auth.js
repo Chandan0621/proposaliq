@@ -139,7 +139,7 @@ function updatePlanBadge(user) {
     if (planEl) planEl.style.color = '#7c3aed';
     if (trialEl) trialEl.style.display = 'none';
   } else {
-    if (planEl) { planEl.textContent = 'Free Plan'; planEl.style.color = ''; }
+    if (planEl) { planEl.textContent = 'Free Demo'; planEl.style.color = ''; }
     if (trialEl) trialEl.style.display = 'none';
   }
 }
@@ -269,16 +269,16 @@ function showGoogleSetupPrompt() {
   overlay.innerHTML = `<div style="background:#fff;border-radius:20px;padding:32px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:Inter,sans-serif;">
     <div style="font-size:40px;margin-bottom:12px;">🔑</div>
     <h2 style="font-size:20px;font-weight:800;margin-bottom:8px;">Google Sign-In Setup</h2>
-    <p style="color:#6b7280;font-size:13px;margin-bottom:18px;">Google ka ek free Client ID chahiye (2 min).</p>
+    <p style="color:#6b7280;font-size:13px;margin-bottom:18px;">A free Google Client ID is required (takes 2 min).</p>
     <div style="text-align:left;background:#f7f6fb;border-radius:12px;padding:14px;margin-bottom:18px;font-size:12.5px;color:#374151;line-height:2.2;">
       <b>1.</b> <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#7c3aed;font-weight:600;">console.cloud.google.com/apis/credentials</a><br>
       <b>2.</b> Create Credentials → OAuth 2.0 Client ID<br>
       <b>3.</b> Type: <b>Web application</b><br>
-      <b>4.</b> Authorized origin: <code style="background:#e8e0f8;padding:1px 5px;border-radius:4px;">https://proposaliq-ai.surge.sh</code><br>
-      <b>5.</b> Client ID copy karo → <code>google-config.js</code> mein paste karo
+      <b>4.</b> Authorized origin: <code style="background:#e8e0f8;padding:1px 5px;border-radius:4px;">https://proposaliqai.com</code><br>
+      <b>5.</b> Copy the Client ID → paste it in <code>google-config.js</code>
     </div>
     <button onclick="document.getElementById('googleSetupOverlay').remove()" style="width:100%;padding:12px;background:linear-gradient(135deg,#7c3aed,#3b82f6);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">OK Got it!</button>
-    <p style="margin-top:10px;font-size:11.5px;color:#9ca3af;">Abhi ke liye Email login use karo ✅</p>
+    <p style="margin-top:10px;font-size:11.5px;color:#9ca3af;">For now, please use Email login ✅</p>
   </div>`;
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
@@ -289,9 +289,17 @@ function showGoogleSetupPrompt() {
 // =====================
 function initAuth() {
   try {
-    // Automatically log in as Guest with Pro plan on init
+    const session = getSession();
+    if (session) {
+      currentUserData = session;
+      onUserLoggedIn(session);
+    } else {
+      skipToDemo();
+    }
+  } catch (e) {
+    console.error('Auth init error:', e);
     skipToDemo();
-  } catch (e) { console.error('Auth init error:', e); skipToDemo(); }
+  }
 }
 
 function onUserLoggedIn(user) {
@@ -333,7 +341,18 @@ function updateHeaderUser(user) {
     }
   }
   if (avatarEl) avatarEl.src = user.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${initial}&backgroundColor=7c3aed&textColor=ffffff`;
-  if (emailEl)  emailEl.textContent = user.isGuest ? 'Free Platform' : user.email;
+  if (emailEl)  emailEl.textContent = user.isGuest ? 'Guest (Not Signed In)' : user.email;
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    if (user.isGuest) {
+      logoutBtn.innerHTML = '🔐 Sign In / Sign Up';
+      logoutBtn.classList.remove('danger');
+    } else {
+      logoutBtn.innerHTML = '🚪 Sign Out';
+      logoutBtn.classList.add('danger');
+    }
+  }
 }
 function resetHeaderUser() {
   const n = document.getElementById('headerUserName'); if(n) n.textContent = 'Sign In';
@@ -544,6 +563,10 @@ function handleForgotPassword() {
 //  LOGOUT
 // =====================
 function handleLogout() {
+  if (currentUserData && currentUserData.isGuest) {
+    showAuthOverlay();
+    return;
+  }
   if (useFirebase) {
     firebase.auth().signOut()
       .then(() => {

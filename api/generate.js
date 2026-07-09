@@ -27,8 +27,8 @@ module.exports = async (req, res) => {
   const userPlan = req.headers['x-user-plan'] || 'free';
   const userEmail = req.headers['x-user-email'] || '';
 
-  // Only users with 'pro' or 'trial' plan are authorized to use the backend Gemini key
-  const isAuthorized = (userPlan === 'pro' || userPlan === 'trial');
+  // Authorized if user is Pro/Trial OR is using the default Guest account
+  const isAuthorized = (userPlan === 'pro' || userPlan === 'trial' || userEmail === 'guest@winscope.app' || userEmail === 'guest@proposaliq.app');
 
   if (!isAuthorized) {
     return res.status(403).json({ 

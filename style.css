@@ -314,23 +314,38 @@ body {
   transform: translateY(-1px);
 }
 
-/* Tool Pills */
-.hero-tools-row {
+/* Quick Actions */
+.hero-shortcuts {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
 }
-.hero-tool-pill {
+.hero-shortcut-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.hero-shortcut-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   padding: 5px 12px;
   background: #fff;
   border: 1px solid #e5e3ef;
   border-radius: 50px;
   font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--purple);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.hero-shortcut-btn:hover {
+  background: var(--purple);
+  color: #fff;
+  border-color: var(--purple);
+  transform: translateY(-1px);
 }
 
 /* ---- GLASS CARD ---- */
@@ -1412,7 +1427,7 @@ body {
   .hero-inner { max-width: 100%; }
   .hero-ctas { flex-direction: column; align-items: flex-start; gap: 10px; }
   .hero-cta-primary, .hero-cta-secondary { width: 100%; justify-content: center; }
-  .hero-tools-row { gap: 6px; }
+  .hero-shortcuts { gap: 6px; }
 }
 
 /* ============================================================

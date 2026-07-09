@@ -1,11 +1,11 @@
 // ============================================
 //  firebase-config.js
-//  Firebase setup karne ke baad yahan paste karo
-//  Abhi IS_CONFIGURED = false hai — Demo Mode mein chalega
+//  Paste your Firebase configuration setup here
+//  Currently IS_CONFIGURED = false — will run in Demo Mode
 // ============================================
 
 const FIREBASE_CONFIG = {
-  IS_CONFIGURED:     false,          // true karo jab real config paste karo
+  IS_CONFIGURED:     false,          // Set to true when you paste your real config
   apiKey:            "",
   authDomain:        "",
   projectId:         "",
