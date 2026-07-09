@@ -1,5 +1,5 @@
 // ============================================
-//  auth.js — ProposalIQ Complete Auth System
+//  auth.js — Winscope Complete Auth System
 //  Email/Password + Google Sign-In + 7-Day Trial
 //  With Firebase Cloud Integration & Local Fallback
 // ============================================
@@ -303,7 +303,7 @@ function onUserLoggedIn(user) {
 function onUserLoggedOut() { skipToDemo(); resetHeaderUser(); }
 function showAuthOverlay() {
   const el = document.getElementById('authOverlay');
-  if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
+  if (el) { el.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
 }
 function hideAuthOverlay() {
   const el = document.getElementById('authOverlay');
@@ -320,7 +320,18 @@ function updateHeaderUser(user) {
   const avatarEl = document.getElementById('headerAvatar');
   const emailEl  = document.getElementById('dropdownEmail');
   if (nameEl)   nameEl.textContent = user.name === 'Guest' ? 'Freelancer' : user.name;
-  if (planEl)   planEl.textContent = 'Pro Access';
+  if (planEl) {
+    if (user.plan === 'pro') {
+      planEl.textContent = 'Pro Access';
+      planEl.style.color = '#10b981';
+    } else if (user.plan === 'trial') {
+      planEl.textContent = 'Pro Trial';
+      planEl.style.color = '#f59e0b';
+    } else {
+      planEl.textContent = 'Free Demo';
+      planEl.style.color = '#9ca3af';
+    }
+  }
   if (avatarEl) avatarEl.src = user.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${initial}&backgroundColor=7c3aed&textColor=ffffff`;
   if (emailEl)  emailEl.textContent = user.isGuest ? 'Free Platform' : user.email;
 }
@@ -379,7 +390,7 @@ function handleBuyPro() {
       <p style="color:#6b7280;font-size:13px;margin-bottom:18px;">To collect real payments, you need to add your Stripe Payment Link.</p>
       <div style="text-align:left;background:#f7f6fb;border-radius:12px;padding:14px;margin-bottom:18px;font-size:12.5px;color:#374151;line-height:2.2;">
         <b>1.</b> Go to <a href="https://dashboard.stripe.com/payment-links" target="_blank" style="color:#7c3aed;font-weight:600;">Stripe Dashboard</a><br>
-        <b>2.</b> Create a new Product (ProposalIQ Pro - $19/mo)<br>
+        <b>2.</b> Create a new Product (Winscope Pro - $19/mo)<br>
         <b>3.</b> Generate a "Payment Link"<br>
         <b>4.</b> Open <code>stripe-config.js</code> in code<br>
         <b>5.</b> Set <code>IS_CONFIGURED = true</code> and paste the link.
@@ -395,7 +406,7 @@ function handleBuyPro() {
 //  DEMO SKIP
 // =====================
 function skipToDemo() {
-  const guest = { name: 'Guest', email: 'guest@proposaliq.app', isGuest: true, plan: 'pro' };
+  const guest = { name: 'Guest', email: 'guest@winscope.app', isGuest: true, plan: 'free' };
   currentUserData = guest; onUserLoggedIn(guest);
 }
 
@@ -442,7 +453,7 @@ async function handleSignup(e) {
           createdAt: new Date().toISOString()
         });
         setAuthLoading(btn,false,'Create Free Account →');
-        toast(`🎉 Welcome to ProposalIQ, ${name}!`, 'success');
+        toast(`🎉 Welcome to Winscope, ${name}!`, 'success');
       })
       .catch((error) => {
         showAuthError('signupError', error.message);
@@ -457,7 +468,7 @@ async function handleSignup(e) {
     const sessionUser={name,email,plan:'free'};
     saveSession(sessionUser); currentUserData=sessionUser;
     setAuthLoading(btn,false,'Create Free Account →');
-    toast(`🎉 Welcome to ProposalIQ, ${name}!`,'success');
+    toast(`🎉 Welcome to Winscope, ${name}!`,'success');
     onUserLoggedIn(sessionUser);
   }
 }

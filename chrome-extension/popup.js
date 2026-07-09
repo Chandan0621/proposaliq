@@ -1,6 +1,6 @@
-// popup.js — ProposalIQ Chrome Extension Logic
+// popup.js — Winscope Chrome Extension Logic
 
-const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 const KEY_STORE = 'piq_ext_apikey';
 const PLATFORM_STORE = 'piq_ext_platform';
 const TONE_STORE = 'piq_ext_tone';
@@ -141,7 +141,7 @@ async function generate() {
 
 // ---- GEMINI API CALL ----
 async function callGemini(apiKey, jobPost, platform, tone) {
-  const prompt = `You are ProposalIQ, an expert freelance proposal writer.
+  const prompt = `You are Winscope, an expert freelance proposal writer.
 
 Analyze this job post and respond in JSON:
 Job Post: "${jobPost.substring(0, 2000)}"
@@ -218,7 +218,7 @@ function copyProposal() {
 
 // ---- OPEN DASHBOARD ----
 function openDashboard() {
-  chrome.tabs.create({ url: 'https://proposaliq-ai.surge.sh' });
+  chrome.tabs.create({ url: 'https://proposaliqai.com' });
 }
 
 // ---- QUICK TOAST ----

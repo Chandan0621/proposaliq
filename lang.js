@@ -1,5 +1,5 @@
 // ============================================
-//  lang.js — ProposalIQ Hindi/English Toggle
+//  lang.js — Winscope Hindi/English Toggle
 // ============================================
 
 const LANG_KEY = 'piq_lang';
@@ -28,7 +28,7 @@ const T = {
     cardTrust:     'Trust Level',   cardPrice:  'Pricing Confidence',
     cardStrategy:  'Recommended Strategy',
     navDash:   'Dashboard', navAnalyze: 'Job Analyzer', navGenerate: 'Proposal Generator',
-    navOpt:    'Proposal Optimizer', navFollow: 'Follow-up AI',
+    navOpt:    'Proposal Optimizer', navFollow: 'Follow-up Generator',
     navScam:   'Scam Detector', navPrice: 'Price Advisor',
     navSaved:  'Saved Proposals', navHistory: 'History',
     upgradeTxt: 'Upgrade to Pro', upgradeDesc: 'Unlock unlimited AI proposals',
@@ -37,7 +37,7 @@ const T = {
     connectAI: '⚙️ Connect AI',
     outputLabel: '📝 Your AI Proposal',
     copyBtn: 'Copy', saveBtn: 'Save',
-    jobPlaceholder: 'Paste the full job description here... ProposalIQ will analyze tone, requirements, budget signals, and client personality automatically.',
+    jobPlaceholder: 'Paste the full job description here... Winscope will analyze tone, requirements, budget signals, and client personality automatically.',
     strategyDefault: 'Generate a proposal to see the recommended winning strategy.',
     loginTitle: 'Sign In', signupTitle: 'Create Account',
     skipDemo: 'Skip — try demo without account',
@@ -67,7 +67,7 @@ const T = {
     cardTrust:     'Bharosa Level',    cardPrice: 'Pricing Confidence',
     cardStrategy:  'Recommended Strategy',
     navDash:   'Dashboard', navAnalyze: 'Job Analyzer', navGenerate: 'Proposal Generator',
-    navOpt:    'Proposal Optimizer', navFollow: 'Follow-up AI',
+    navOpt:    'Proposal Optimizer', navFollow: 'Follow-up Generator',
     navScam:   'Scam Detector', navPrice: 'Price Advisor',
     navSaved:  'Save Kiye Proposals', navHistory: 'Itihas',
     upgradeTxt: 'Pro mein Upgrade Karein', upgradeDesc: 'Unlimited AI proposals unlock karein',
@@ -76,7 +76,7 @@ const T = {
     connectAI: '⚙️ AI Connect Karein',
     outputLabel: '📝 Aapka AI Proposal',
     copyBtn: 'Copy Karein', saveBtn: 'Save Karein',
-    jobPlaceholder: 'Poora job description yahan paste karein... ProposalIQ aapki tone, requirements, budget signals aur client ki personality automatically analyze karega.',
+    jobPlaceholder: 'Poora job description yahan paste karein... Winscope aapki tone, requirements, budget signals aur client ki personality automatically analyze karega.',
     strategyDefault: 'Proposal generate karein — winning strategy yahan dikhegi.',
     loginTitle: 'Sign In Karein', signupTitle: 'Account Banayein',
     skipDemo: 'Skip — bina account ke demo try karein',

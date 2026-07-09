@@ -1,7 +1,21 @@
 {
   "version": 2,
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/api/generate", "destination": "/api/generate.js" }
+  "builds": [
+    { "src": "api/generate.js", "use": "@vercel/node" },
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "style.css", "use": "@vercel/static" },
+    { "src": "app.js", "use": "@vercel/static" },
+    { "src": "auth.js", "use": "@vercel/static" },
+    { "src": "templates.js", "use": "@vercel/static" },
+    { "src": "template-data.js", "use": "@vercel/static" },
+    { "src": "lang.js", "use": "@vercel/static" },
+    { "src": "firebase-config.js", "use": "@vercel/static" },
+    { "src": "google-config.js", "use": "@vercel/static" },
+    { "src": "stripe-config.js", "use": "@vercel/static" },
+    { "src": "ProposalIQ_Extension.zip", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/generate", "dest": "api/generate.js" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }

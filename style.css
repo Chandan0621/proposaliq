@@ -623,28 +623,85 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d1c9e8; border-radius: 99px; }
 
-/* ---- SETTINGS BUTTON ---- */
+/* ---- CONNECT AI BUTTON (Primary CTA in topbar) ---- */
 .btn-settings {
-  background: #f0edf8;
-  border: 1px solid rgba(124,58,237,0.2);
-  color: var(--purple);
-  padding: 7px 14px; border-radius: 8px;
-  font-size: 12.5px; font-weight: 600;
-  cursor: pointer; transition: all var(--transition);
-}
-.btn-settings:hover { background: rgba(124,58,237,0.12); }
-
-/* ---- LANG TOGGLE ---- */
-.lang-toggle-btn {
-  background: #f0edf8;
-  border: 1px solid rgba(124,58,237,0.2);
-  color: var(--purple);
-  padding: 7px 13px; border-radius: 8px;
-  font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all var(--transition);
+  background: linear-gradient(135deg, var(--purple), #5b21b6);
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 2px 8px rgba(124,58,237,0.3);
   white-space: nowrap;
 }
-.lang-toggle-btn:hover { background: rgba(124,58,237,0.15); transform: scale(1.02); }
+.btn-settings:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(124,58,237,0.45);
+}
+
+/* ---- LANG TOGGLE (now in overflow menu, hidden from topbar) ---- */
+.lang-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: left; width: 100%;
+  transition: background var(--transition);
+}
+.lang-toggle-btn:hover { background: rgba(124,58,237,0.08); }
+
+/* ---- HEADER OVERFLOW MENU ---- */
+.header-overflow-btn {
+  position: relative;
+  background: #f0edf8;
+  border: 1px solid rgba(124,58,237,0.2);
+  color: var(--purple);
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  transition: all var(--transition);
+  user-select: none;
+}
+.header-overflow-btn:hover { background: rgba(124,58,237,0.12); }
+.header-overflow-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border: 1px solid rgba(124,58,237,0.15);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  min-width: 200px;
+  z-index: 9999;
+  padding: 6px 0;
+  overflow: hidden;
+}
+.header-overflow-menu.open { display: block; }
+.overflow-item {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  transition: background var(--transition);
+}
+.overflow-item:hover { background: #f5f3ff; color: var(--purple); }
 
 /* ---- AI STATUS PILL ---- */
 .ai-status-pill {

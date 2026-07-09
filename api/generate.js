@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, X-User-Plan, X-User-Email'
   );
 
   if (req.method === 'OPTIONS') {
@@ -24,6 +24,18 @@ module.exports = async (req, res) => {
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
+  const userPlan = req.headers['x-user-plan'] || 'free';
+  const userEmail = req.headers['x-user-email'] || '';
+
+  // Only users with 'pro' or 'trial' plan are authorized to use the backend Gemini key
+  const isAuthorized = (userPlan === 'pro' || userPlan === 'trial');
+
+  if (!isAuthorized) {
+    return res.status(403).json({ 
+      success: false, 
+      error: 'Pro subscription required. Please connect your own Gemini API key for real AI output.' 
+    });
+  }
 
   try {
     switch (type) {
@@ -53,7 +65,8 @@ async function handleProposal(payload, apiKey, res) {
   const { jobPost, skill, exp, tone, platform } = payload;
   
   if (apiKey) {
-    const prompt = `You are ProposalIQ, an expert AI assistant for freelancers. Analyze this job post and return ONLY a raw JSON object (no markdown code blocks, no explanation, just raw JSON).
+    try {
+      const prompt = `You are Winscope, an expert AI assistant for freelancers. Analyze this job post and return ONLY a raw JSON object (no markdown code blocks, no explanation, just raw JSON).
 
 Job Post: """${jobPost}"""
 Skill Category: ${skill || 'General'}
@@ -91,16 +104,23 @@ CRITICAL COPYWRITING GUIDELINES FOR THE "proposal" FIELD:
 5. OPEN-ENDED QUESTION: End with a single, simple, action-oriented closing question (e.g. "Do you have 5 minutes for a quick chat to discuss the dashboard layout?") to encourage them to reply. Do not ask generic questions like "When can we start?".
 6. FORMATTING: Use double line breaks \\n\\n between sections and bullet points for readability. Avoid markdown bold headers in the proposal text, keep it clean.`;
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const result = await model.generateContent({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
-    });
-    const text = result.response.text().trim();
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return res.status(200).json({ success: true, source: 'gemini', data: JSON.parse(jsonMatch[0]) });
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const result = await model.generateContent({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+      });
+      const text = result.response.text().trim();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return res.status(200).json({ success: true, source: 'gemini', data: JSON.parse(jsonMatch[0]) });
+      } else {
+        console.error('No JSON match found in AI response:', text);
+        return res.status(200).json({ success: false, error: 'AI response parsing failed', rawResponse: text });
+      }
+    } catch (err) {
+      console.error('Gemini generateContent failed:', err);
+      return res.status(200).json({ success: false, error: err.message, stack: err.stack });
     }
   }
 
@@ -131,7 +151,7 @@ Write a reply that:
 Output ONLY the reply message, nothing else.`;
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const result = await model.generateContent({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { temperature: 0.75, maxOutputTokens: 400 }
@@ -182,7 +202,7 @@ Write a reply that:
 Output ONLY the reply, nothing else.`;
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const result = await model.generateContent({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { temperature: 0.7, maxOutputTokens: 500 }
@@ -225,7 +245,7 @@ Rules:
 Output ONLY the follow-up message.`;
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const result = await model.generateContent({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { temperature: 0.7, maxOutputTokens: 300 }
@@ -282,7 +302,7 @@ Rules for ALL emails:
 - Strong, specific CTA at the end of each email`;
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const result = await model.generateContent({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { temperature: 0.8, maxOutputTokens: 2000 }

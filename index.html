@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ProposalIQ – AI Proposal & Cold Email Generator for Freelancers</title>
-<meta name="description" content="ProposalIQ — Free AI tool for freelancers. Generate winning proposals, cold emails, Fiverr replies, client messages & follow-ups. No signup required."/>
+<title>Winscope – AI Proposal & Cold Email Generator for Freelancers</title>
+<meta name="description" content="Winscope — Free AI tool for freelancers. Generate winning proposals, cold emails, Fiverr buyer requests, client messages & follow-ups. No signup required."/>
 <!-- Open Graph -->
-<meta property="og:title" content="ProposalIQ – AI Proposal & Cold Email Generator for Freelancers"/>
+<meta property="og:title" content="Winscope – AI Proposal & Cold Email Generator for Freelancers"/>
 <meta property="og:description" content="Write winning proposals, cold emails, and client messages in seconds. 100% free. No signup."/>
-<meta property="og:url" content="https://chandan0621.github.io/proposaliq"/>
+<meta property="og:url" content="https://proposaliqai.com"/>
 <meta property="og:type" content="website"/>
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="ProposalIQ – AI Proposal & Cold Email Generator"/>
+<meta name="twitter:title" content="Winscope – AI Proposal & Cold Email Generator"/>
 <meta name="twitter:description" content="Free AI tool for freelancers. Proposals, cold emails, client replies & more."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -49,8 +49,8 @@
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-left">
     <div class="auth-brand">
-      <div class="auth-logo-icon">IQ</div>
-      <span class="auth-logo-text">ProposalIQ</span>
+      <div class="auth-logo-icon">WS</div>
+      <span class="auth-logo-text">Winscope</span>
     </div>
     <h1 class="auth-tagline">Write Proposals<br/>That <span class="gradient-text">Get Replies</span></h1>
     <p class="auth-subtitle">AI-powered proposal intelligence for freelancers worldwide.</p>
@@ -171,8 +171,8 @@
      ============================ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-icon">IQ</div>
-    <span class="logo-text">ProposalIQ</span>
+    <div class="logo-icon">WS</div>
+    <span class="logo-text">Winscope</span>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Main</div>
@@ -181,14 +181,14 @@
     <a href="#" class="nav-item" data-tab="proposalGen"><span class="nav-icon">✨</span> Proposal Generator</a>
     <a href="#" class="nav-item" data-tab="fiverrRequest"><span class="nav-icon">🛒</span> Fiverr Buyer Request</a>
     <a href="#" class="nav-item" data-tab="clientMsg"><span class="nav-icon">💬</span> Client Message Writer</a>
-    <a href="#" class="nav-item" data-tab="followUp"><span class="nav-icon">🔁</span> Follow-up AI</a>
+    <a href="#" class="nav-item" data-tab="followUp"><span class="nav-icon">🔁</span> Follow-up Generator</a>
     <a href="#" class="nav-item" data-tab="coldEmail"><span class="nav-icon">✉️</span> Cold Email Generator</a>
     <div class="nav-section-label">Tools</div>
     <a href="#" class="nav-item"><span class="nav-icon">🛡️</span> Scam Detector</a>
     <a href="#" class="nav-item"><span class="nav-icon">💰</span> Price Advisor</a>
     <a href="#" class="nav-item"><span class="nav-icon">🔖</span> Saved Proposals</a>
     <a href="#" class="nav-item"><span class="nav-icon">📋</span> History</a>
-    <a href="ProposalIQ_Extension.zip" download class="nav-item" style="color: #10b981; font-weight: 700;"><span class="nav-icon">🔌</span> Chrome Extension</a>
+    <a href="https://chromewebstore.google.com/" target="_blank" class="nav-item" style="color: #10b981; font-weight: 700;"><span class="nav-icon">🔌</span> Chrome Extension</a>
   </nav>
   <div class="sidebar-upgrade">
     <div class="upgrade-card">
@@ -215,21 +215,28 @@
       </div>
     </div>
     <div class="header-right">
-      <button class="lang-toggle-btn" id="langToggleBtn" title="Switch Language">🇮🇳 हिंदी</button>
-      <div class="ai-status-pill" id="aiStatusPill">
+      <div class="ai-status-pill" id="aiStatusPill" title="Demo Mode: AI responses are pre-generated samples. Connect your free Gemini API key via ⚙️ to get real AI output.">
         <span class="ai-dot" id="aiDot"></span>
-        <span id="aiStatusText">Simulation Mode</span>
+        <span id="aiStatusText">Demo Mode (no API key needed)</span>
       </div>
       <div class="trial-badge" id="trialBadge" style="display:none;">🔥 Trial Active</div>
-      <a href="ProposalIQ_Extension.zip" download class="btn-extension-download" title="Download Chrome Extension" style="text-decoration:none; display:flex; align-items:center; gap:6px; background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#10b981; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">🔌 Extension</a>
-      <button class="btn-settings" id="settingsBtn" title="Connect Gemini AI">⚙️ Connect AI</button>
+      <button class="btn-settings" id="settingsBtn" title="Connect your free Gemini API key for real AI output">⚙️ Connect AI</button>
       <button class="btn-header-upgrade" id="headerUpgradeBtn">✦ Upgrade Pro</button>
-      <div class="notif-btn">🔔<span class="notif-badge">3</span></div>
+      <div class="notif-btn" id="notifBtn">🔔<span class="notif-badge" id="notifBadge" style="display:none;">0</span></div>
+      <!-- Overflow Menu for secondary options (Extension, Hindi Toggle) -->
+      <div class="header-overflow-btn" id="headerOverflowBtn" title="More options" style="position: relative; margin-left: 8px;">⋯
+        <div class="header-overflow-menu" id="headerOverflowMenu">
+          <a href="https://chromewebstore.google.com/" target="_blank" class="overflow-item">🔌 Chrome Extension</a>
+          <button class="overflow-item" id="langToggleBtn">🌐 Switch to हिंदी</button>
+          <hr class="dropdown-divider"/>
+          <button class="overflow-item" id="overflowSettings">⚙️ API Key Settings</button>
+        </div>
+      </div>
       <div class="user-avatar" id="userAvatarMenu">
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=proposaliq" alt="User" id="headerAvatar"/>
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=winscope" alt="User" id="headerAvatar"/>
         <div class="user-info">
-          <span class="user-name" id="headerUserName">User</span>
-          <span class="user-plan" id="headerUserPlan">Free Plan</span>
+          <span class="user-name" id="headerUserName">Guest</span>
+          <span class="user-plan" id="headerUserPlan">Free Demo</span>
         </div>
         <!-- Dropdown -->
         <div class="user-dropdown" id="userDropdown">
@@ -363,7 +370,7 @@
           <h2 class="panel-title">🛒 Fiverr Buyer Request Reply</h2>
           <span class="panel-badge done">Fiverr Mode</span>
         </div>
-        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Fiverr Buyer Requests ka alag format hota hai. Yahan paste karo aur perfect reply pao.</p>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Fiverr Buyer Requests have a unique format. Paste the request below to generate a tailored, professional response.</p>
         <div class="form-group">
           <label class="form-label">Paste Buyer Request <span class="required">*</span></label>
           <textarea class="form-textarea" id="fiverrRequest" placeholder="Paste the Fiverr buyer request here... e.g. 'I need a logo designed for my bakery business. Budget: $30. Deadline: 3 days.'" rows="6"></textarea>
@@ -410,21 +417,21 @@
           <h2 class="panel-title">💬 Client Message Writer</h2>
           <span class="panel-badge" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;">New ✨</span>
         </div>
-        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Client ne kuch message kiya hai? Uska professional reply yahan generate karo.</p>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Did a client send you a message? Generate a professional, high-converting reply instantly.</p>
         <div class="form-group">
-          <label class="form-label">Client ka Message Paste Karo <span class="required">*</span></label>
+          <label class="form-label">Paste Client Message <span class="required">*</span></label>
           <textarea class="form-textarea" id="clientMsg" placeholder="e.g. 'Hi, I reviewed your proposal. Can you tell me more about your experience with React? Also, can you finish this in 5 days?'" rows="5"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Message Type</label>
             <select class="form-select" id="clientMsgType">
-              <option value="inquiry">Client Inquiry (questions pooch raha hai)</option>
-              <option value="negotiation">Price Negotiation (price kam karna chahta hai)</option>
-              <option value="revision">Revision Request (changes chahta hai)</option>
-              <option value="delay">Deadline Extension (more time chahiye)</option>
-              <option value="complaint">Complaint (kuch galat hua)</option>
-              <option value="positive">Positive Feedback (appreciation)</option>
+              <option value="inquiry">Client Inquiry (asking project questions)</option>
+              <option value="negotiation">Price Negotiation (discussing budget/rates)</option>
+              <option value="revision">Revision Request (asking for project changes)</option>
+              <option value="delay">Deadline Extension (asking for more time)</option>
+              <option value="complaint">Complaint / Dispute resolution</option>
+              <option value="positive">Positive Feedback / Appreciation reply</option>
             </select>
           </div>
           <div class="form-group">
@@ -458,18 +465,18 @@
           <h2 class="panel-title">🔁 Follow-up Message Generator</h2>
           <span class="panel-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;">New ✨</span>
         </div>
-        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Client ne reply nahi kiya? Smart follow-up messages generate karo jo reply dilwayen.</p>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Client went silent? Generate smart, polite follow-up messages that get replies.</p>
         <div class="form-group">
-          <label class="form-label">Original Proposal / Message ka Summary <span class="required">*</span></label>
+          <label class="form-label">Summary of Original Proposal or Last Message <span class="required">*</span></label>
           <textarea class="form-textarea" id="followUpContext" placeholder="e.g. 'I sent a proposal for a WordPress website project 3 days ago. Budget was $500. Client viewed but did not reply.'" rows="4"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Follow-up Number</label>
             <select class="form-select" id="followUpNumber">
-              <option value="1st">1st Follow-up (2-3 din baad)</option>
-              <option value="2nd">2nd Follow-up (1 hafte baad)</option>
-              <option value="final">Final Follow-up (Last try)</option>
+              <option value="1st">1st Follow-up (after 2-3 days)</option>
+              <option value="2nd">2nd Follow-up (after 1 week)</option>
+              <option value="final">Final Follow-up (Last attempt)</option>
             </select>
           </div>
           <div class="form-group">
@@ -728,9 +735,9 @@
       <div><span class="price-big">$2.99</span>/month</div>
       <div style="background: #10b981; color: white; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: bold; margin-top: 4px;">LAUNCH SPECIAL 85% OFF</div>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 10px; margin-top:1.5rem;">
-      <button class="btn-generate start-trial-btn"><span class="btn-glow"></span><span class="btn-content">🚀 Start 7-Day Free Trial</span></button>
-      <button class="btn-generate buy-pro-btn" style="background: linear-gradient(135deg, #10b981, #059669);"><span class="btn-content">💳 Buy Pro Now ($2.99)</span></button>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top:1.5rem; align-items: center; width: 100%;">
+      <button class="btn-generate start-trial-btn" style="width: 100%;"><span class="btn-glow"></span><span class="btn-content">🚀 Start 7-Day Free Trial</span></button>
+      <button class="btn-generate buy-pro-btn" style="background: transparent; border: none; color: var(--purple); font-size: 13px; font-weight: 600; text-decoration: underline; cursor: pointer; box-shadow: none; padding: 4px; margin-top: 4px;"><span class="btn-content">Or buy Pro plan directly ($2.99/mo)</span></button>
     </div>
     <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px;" id="trialNoteEl">No credit card required for trial · Cancel anytime</p>
   </div>
@@ -744,9 +751,9 @@
     <h2>My Profile</h2>
     <div style="text-align:left; background:rgba(255,255,255,0.05); padding:16px; border-radius:12px; margin:16px 0; font-size:14px; line-height:1.8;">
       <div style="margin-bottom:8px;"><strong>Name:</strong> <span id="profileNameVal">Guest</span></div>
-      <div style="margin-bottom:8px;"><strong>Email:</strong> <span id="profileEmailVal">guest@proposaliq.app</span></div>
-      <div style="margin-bottom:8px;"><strong>Account Plan:</strong> <span id="profilePlanVal" style="color:#10b981; font-weight:bold;">Pro Access</span></div>
-      <div><strong>Status:</strong> <span style="color:#10b981; font-weight:bold;">Active</span></div>
+      <div style="margin-bottom:8px;"><strong>Email:</strong> <span id="profileEmailVal">guest@winscope.app</span></div>
+      <div style="margin-bottom:8px;"><strong>Account Plan:</strong> <span id="profilePlanVal" style="color:#9ca3af; font-weight:bold;">Free Demo</span></div>
+      <div><strong>Status:</strong> <span style="color:#f59e0b; font-weight:bold;">Demo Mode</span></div>
     </div>
     <button class="btn-generate" onclick="document.getElementById('profileModal').classList.remove('open')">
       <span class="btn-content">Close Profile</span>
@@ -817,7 +824,7 @@
   document.getElementById('dropdownSettings').addEventListener('click', function(e) {
     e.stopPropagation();
     document.getElementById('userDropdown').classList.remove('open');
-    document.getElementById('apiKeyInput').value = localStorage.getItem('proposaliq_gemini_key') || '';
+    document.getElementById('apiKeyInput').value = getApiKey();
     document.getElementById('settingsModal').classList.add('open');
   });
   // Password eye toggles

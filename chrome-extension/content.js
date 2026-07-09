@@ -1,4 +1,4 @@
-// content.js — ProposalIQ Job Detector
+// content.js — Winscope Job Detector
 // Auto-detects job post text on Upwork, Fiverr, Freelancer
 
 (function() {

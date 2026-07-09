@@ -3,11 +3,12 @@
 //  Real Gemini AI (BYOK)
 // ======================
 
-const STORAGE_KEY = 'proposaliq_gemini_key';
+const STORAGE_KEY = 'winscope_gemini_key';
+const BACKWARD_STORAGE_KEY = 'proposaliq_gemini_key';
 
 // ---- API KEY MANAGEMENT ----
-function getApiKey() { return localStorage.getItem(STORAGE_KEY) || ''; }
-function saveApiKey(k) { if (k) localStorage.setItem(STORAGE_KEY, k); else localStorage.removeItem(STORAGE_KEY); }
+function getApiKey() { return localStorage.getItem(STORAGE_KEY) || localStorage.getItem(BACKWARD_STORAGE_KEY) || ''; }
+function saveApiKey(k) { if (k) { localStorage.setItem(STORAGE_KEY, k); } else { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(BACKWARD_STORAGE_KEY); } }
 
 // ---- AI STATUS INDICATOR ----
 function updateAiStatus() {
@@ -21,7 +22,7 @@ function updateAiStatus() {
     if (badge) { badge.textContent = '🤖 Gemini AI'; badge.className = 'panel-badge done'; }
   } else {
     dot.className = 'ai-dot';
-    text.textContent = 'Simulation Mode';
+    text.textContent = 'Demo Mode (no API key needed)';
     if (badge) { badge.textContent = '⚡ AI Ready'; badge.className = 'panel-badge'; }
   }
 }
@@ -102,7 +103,7 @@ document.getElementById('clearApiKeyBtn').addEventListener('click', () => {
   apiKeyInput.value = '';
   settingsModal.classList.remove('open');
   updateAiStatus();
-  showToast('Key removed. Running in simulation mode.', 'info');
+  showToast('Key removed. Running in Demo Mode.', 'info');
 });
 
 // ---- UPGRADE MODAL ----
@@ -159,6 +160,12 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   setTimeout(() => { btn.textContent = 'Save'; btn.style.background = ''; }, 2000);
 });
 
+// ---- HELPER FOR BACKEND ACCESS CONTROL ----
+function shouldCallBackend() {
+  const user = window.currentUser ? window.currentUser() : null;
+  return !!(user && (user.plan === 'pro' || user.plan === 'trial'));
+}
+
 // ---- GENERATE PROPOSAL ----
 document.getElementById('generateBtn').addEventListener('click', async () => {
   const jobPost = document.getElementById('jobPost').value.trim();
@@ -172,36 +179,39 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
   setLoadingState(true);
 
   try {
+    const isPro = shouldCallBackend();
     const apiKey = getApiKey();
     let result;
-    if (apiKey) {
+
+    if (isPro) {
+      // Pro Users bypass local API key requirement and call backend using owner's API key
+      const responseData = await callBackendAI('proposal', { jobPost, skill, exp, tone, platform });
+      if (responseData && responseData.success) {
+        result = responseData.data;
+        document.getElementById('analysisBadge').textContent = '🤖 Gemini AI';
+        document.getElementById('analysisBadge').className = 'panel-badge done';
+      } else {
+        throw new Error(responseData?.error || 'Failed to generate proposal. Please try again.');
+      }
+    } else if (apiKey) {
+      // Free/Guest users with local connected key use their key
       result = await callGeminiAI(jobPost, skill, exp, tone, platform, apiKey);
       document.getElementById('analysisBadge').textContent = '🤖 Gemini AI';
       document.getElementById('analysisBadge').className = 'panel-badge done';
     } else {
-      const responseData = await callBackendAI('proposal', { jobPost, skill, exp, tone, platform });
-      if (responseData) {
-        result = responseData.data;
-        if (responseData.source === 'gemini') {
-          document.getElementById('analysisBadge').textContent = '🤖 Gemini AI';
-          document.getElementById('analysisBadge').className = 'panel-badge done';
-        } else {
-          document.getElementById('analysisBadge').textContent = '⚡ Simulated';
-          document.getElementById('analysisBadge').className = 'panel-badge';
-        }
-      } else {
-        await delay(1800);
-        result = simulateAnalysis(jobPost, skill, exp, tone, platform);
-        document.getElementById('analysisBadge').textContent = '⚡ Simulated (Fallback)';
-        document.getElementById('analysisBadge').className = 'panel-badge';
-      }
+      // Free/Guest users without connected key get Demo Mode (Simulation fallback)
+      await delay(1200);
+      result = simulateAnalysis(jobPost, skill, exp, tone, platform);
+      document.getElementById('analysisBadge').textContent = '⚡ Demo Mode';
+      document.getElementById('analysisBadge').className = 'panel-badge';
+      showToast('ℹ️ Running in Demo Mode. Connect AI or Upgrade to Pro for real AI proposals.', 'info');
     }
     renderResults(result);
   } catch (err) {
     console.error(err);
-    showToast('❌ Error: ' + err.message + ' — switching to simulation.', 'error');
+    showToast('❌ Error: ' + err.message + ' — switching to Demo Mode.', 'error');
     const result = simulateAnalysis(jobPost, skill, exp, tone, platform);
-    document.getElementById('analysisBadge').textContent = '⚡ Simulated (Fallback)';
+    document.getElementById('analysisBadge').textContent = '⚡ Demo Mode';
     renderResults(result);
   } finally {
     setLoadingState(false);
@@ -210,7 +220,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
 
 // ---- GEMINI DIRECT API CALL ----
 async function callGeminiAI(jobPost, skill, exp, tone, platform, apiKey) {
-  const prompt = `You are ProposalIQ, an expert AI assistant for freelancers. Analyze this job post and return ONLY a raw JSON object (no markdown code blocks, no explanation, just raw JSON).
+  const prompt = `You are Winscope, an expert AI assistant for freelancers. Analyze this job post and return ONLY a raw JSON object (no markdown code blocks, no explanation, just raw JSON).
 
 Job Post: """${jobPost}"""
 Skill Category: ${skill}
@@ -249,7 +259,7 @@ CRITICAL COPYWRITING GUIDELINES FOR THE "proposal" FIELD:
 5. OPEN-ENDED QUESTION: End with a single, simple, action-oriented closing question (e.g. "Do you have 5 minutes for a quick chat to discuss the dashboard layout?") to encourage them to reply. Do not ask generic questions like "When can we start?".
 6. FORMATTING: Use double line breaks \\n\\n between sections and bullet points for readability. Avoid markdown bold headers in the proposal text, keep it clean.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
   const resp = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -276,9 +286,26 @@ CRITICAL COPYWRITING GUIDELINES FOR THE "proposal" FIELD:
 // ---- CALL BACKEND SERVERLESS API ----
 async function callBackendAI(type, payload) {
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    const user = window.currentUser ? window.currentUser() : null;
+
+    if (user) {
+      headers['X-User-Email'] = user.email || '';
+      headers['X-User-Plan'] = user.plan || 'free';
+    }
+
+    if (window.useFirebase && firebase.auth().currentUser) {
+      try {
+        const token = await firebase.auth().currentUser.getIdToken();
+        headers['Authorization'] = `Bearer ${token}`;
+      } catch (err) {
+        console.warn('Failed to get auth token:', err);
+      }
+    }
+
     const response = await fetch('/api/generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify({ type, payload })
     });
     if (response.ok) {
@@ -690,7 +717,15 @@ async function generateFiverrReply() {
   let reply = '';
 
   try {
-    if (apiKey) {
+    const isPro = shouldCallBackend();
+    if (isPro) {
+      const responseData = await callBackendAI('fiverr', { request, gigCat, level });
+      if (responseData && responseData.success) {
+        reply = responseData.reply;
+      } else {
+        throw new Error(responseData?.error || 'Backend call failed');
+      }
+    } else if (apiKey) {
       const prompt = `You are an expert Fiverr seller. Write a short, compelling reply to this Fiverr buyer request. Make it feel personal, not template-like. Mention their specific needs. Keep it under 120 words. Do not use "Dear" or "To Whom".
 
 Buyer Request: """${request}"""
@@ -705,15 +740,12 @@ Write a reply that:
 
 Output ONLY the reply message, nothing else.`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
       const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.75, maxOutputTokens:400} }) });
       const data = await resp.json();
       reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
     } else {
-      const responseData = await callBackendAI('fiverr', { request, gigCat, level });
-      if (responseData) {
-        reply = responseData.reply;
-      }
+      showToast('ℹ️ Running in Demo Mode. Connect AI or Upgrade to Pro for real AI responses.', 'info');
     }
 
     if (!reply) {
@@ -767,7 +799,15 @@ async function generateClientReply() {
   let reply = '';
 
   try {
-    if (apiKey) {
+    const isPro = shouldCallBackend();
+    if (isPro) {
+      const responseData = await callBackendAI('client', { msg, type, tone });
+      if (responseData && responseData.success) {
+        reply = responseData.reply;
+      } else {
+        throw new Error(responseData?.error || 'Backend call failed');
+      }
+    } else if (apiKey) {
       const prompt = `You are a professional freelancer. Write a reply to the following client message.
 Message Type: ${type}
 Tone: ${tone}
@@ -782,15 +822,12 @@ Write a reply that:
 
 Output ONLY the reply, nothing else.`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
       const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:500} }) });
       const data = await resp.json();
       reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
     } else {
-      const responseData = await callBackendAI('client', { msg, type, tone });
-      if (responseData) {
-        reply = responseData.reply;
-      }
+      showToast('ℹ️ Running in Demo Mode. Connect AI or Upgrade to Pro for real AI responses.', 'info');
     }
 
     if (!reply) {
@@ -833,7 +870,15 @@ async function generateFollowUp() {
   let reply = '';
 
   try {
-    if (apiKey) {
+    const isPro = shouldCallBackend();
+    if (isPro) {
+      const responseData = await callBackendAI('followup', { context, followNum, platform });
+      if (responseData && responseData.success) {
+        reply = responseData.reply;
+      } else {
+        throw new Error(responseData?.error || 'Backend call failed');
+      }
+    } else if (apiKey) {
       const prompt = `You are a professional freelancer on ${platform}. Write a ${followNum} follow-up message for the following context.
 
 Context: """${context}"""
@@ -848,15 +893,12 @@ Rules:
 
 Output ONLY the follow-up message.`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
       const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:300} }) });
       const data = await resp.json();
       reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
     } else {
-      const responseData = await callBackendAI('followup', { context, followNum, platform });
-      if (responseData) {
-        reply = responseData.reply;
-      }
+      showToast('ℹ️ Running in Demo Mode. Connect AI or Upgrade to Pro for real AI responses.', 'info');
     }
 
     if (!reply) {
@@ -925,7 +967,7 @@ function exportColdEmailsTXT() {
   const company  = document.getElementById('ceCompanyName')?.value.trim() || 'Company';
   const ids = ['ceSubjectLines','ceEmailA','ceEmailB','ceFollowup1','ceFollowup2','ceLinkedIn'];
   const labels = ['5 SUBJECT LINES','COLD EMAIL VERSION A','COLD EMAIL VERSION B','FOLLOW-UP EMAIL #1','FOLLOW-UP EMAIL #2','LINKEDIN OUTREACH MESSAGE'];
-  let content = `PROPOSALIQ — COLD EMAIL GENERATOR\nGenerated for: ${prospect} @ ${company}\nDate: ${new Date().toLocaleDateString()}\n${'='.repeat(50)}\n\n`;
+  let content = `WINSCOPE — COLD EMAIL GENERATOR\nGenerated for: ${prospect} @ ${company}\nDate: ${new Date().toLocaleDateString()}\n${'='.repeat(50)}\n\n`;
   ids.forEach((id, i) => {
     const el = document.getElementById(id);
     if (el && el.innerText.trim()) {
@@ -945,7 +987,12 @@ function exportColdEmailsTXT() {
   showToast('✅ TXT file downloaded!', 'success');
 }
 
-const CE_HISTORY_KEY = 'proposaliq_ce_history';
+const CE_HISTORY_KEY = 'winscope_ce_history';
+const BACKWARD_CE_HISTORY_KEY = 'proposaliq_ce_history';
+
+function getColdEmailHistoryRaw() {
+  return localStorage.getItem(CE_HISTORY_KEY) || localStorage.getItem(BACKWARD_CE_HISTORY_KEY) || '[]';
+}
 
 function saveColdEmailHistory() {
   const prospect = document.getElementById('ceProspectName')?.value.trim();
@@ -956,16 +1003,17 @@ function saveColdEmailHistory() {
   const data = {};
   ids.forEach(id => { const el = document.getElementById(id); if(el) data[id] = el.innerText.trim(); });
 
-  const existing = JSON.parse(localStorage.getItem(CE_HISTORY_KEY) || '[]');
+  const existing = JSON.parse(getColdEmailHistoryRaw());
   existing.unshift({ prospect, company, data, time: Date.now() });
   if (existing.length > 5) existing.pop();
   localStorage.setItem(CE_HISTORY_KEY, JSON.stringify(existing));
+  localStorage.removeItem(BACKWARD_CE_HISTORY_KEY);
   loadColdEmailHistory();
   showToast('✅ Saved to history!', 'success');
 }
 
 function loadColdEmailHistory() {
-  const history = JSON.parse(localStorage.getItem(CE_HISTORY_KEY) || '[]');
+  const history = JSON.parse(getColdEmailHistoryRaw());
   const section = document.getElementById('ceHistorySection');
   const list    = document.getElementById('ceHistoryList');
   if (!section || !list) return;
@@ -984,7 +1032,7 @@ function loadColdEmailHistory() {
 }
 
 function restoreCEHistory(idx) {
-  const history = JSON.parse(localStorage.getItem(CE_HISTORY_KEY) || '[]');
+  const history = JSON.parse(getColdEmailHistoryRaw());
   const item = history[idx];
   if (!item) return;
   document.getElementById('ceProspectName').value = item.prospect;
@@ -1001,6 +1049,7 @@ function restoreCEHistory(idx) {
 
 function clearColdEmailHistory() {
   localStorage.removeItem(CE_HISTORY_KEY);
+  localStorage.removeItem(BACKWARD_CE_HISTORY_KEY);
   loadColdEmailHistory();
   showToast('🗑️ History cleared.', 'info');
 }
@@ -1063,8 +1112,15 @@ async function generateColdEmail() {
   const apiKey = getApiKey();
   let results = null;
 
-  try {
-    if (apiKey) {
+    const isPro = shouldCallBackend();
+    if (isPro) {
+      const responseData = await callBackendAI('coldemail', { prospect, company, industry, service, goal, tone });
+      if (responseData && responseData.success) {
+        results = responseData.data;
+      } else {
+        throw new Error(responseData?.error || 'Backend call failed');
+      }
+    } else if (apiKey) {
       const prompt = `You are a world-class cold email copywriter. Generate high-converting cold email content for the following prospect.
 
 Prospect: ${prospect}
@@ -1096,7 +1152,7 @@ Rules for ALL emails:
 - Human sounding, not AI-generated sounding
 - Strong, specific CTA at the end of each email`;
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
       const resp = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1107,16 +1163,13 @@ Rules for ALL emails:
       });
       const data = await resp.json();
       const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-      // Extract JSON from response
+      
       const jsonMatch = raw.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         results = JSON.parse(jsonMatch[0]);
       }
     } else {
-      const responseData = await callBackendAI('coldemail', { prospect, company, industry, service, goal, tone });
-      if (responseData) {
-        results = responseData.data;
-      }
+      showToast('ℹ️ Running in Demo Mode. Connect AI or Upgrade to Pro for real AI responses.', 'info');
     }
 
     // Smart simulation fallback
