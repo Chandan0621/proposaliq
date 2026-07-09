@@ -185,11 +185,42 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 // ---- HELPER FOR BACKEND ACCESS CONTROL ----
 function shouldCallBackend() {
   const user = window.currentUser ? window.currentUser() : null;
-  return !!(user && (user.plan === 'pro' || user.plan === 'trial'));
+  if (!user) return false;
+  if (user.plan === 'pro' || user.plan === 'trial') return true;
+  if (user.isGuest) {
+    const limitCount = parseInt(localStorage.getItem('winscope_guest_generations') || '0', 10);
+    return limitCount < 2;
+  }
+  return false;
+}
+
+function enforceGuestLimit() {
+  const user = window.currentUser ? window.currentUser() : null;
+  if (user && user.isGuest) {
+    const limitCount = parseInt(localStorage.getItem('winscope_guest_generations') || '0', 10);
+    if (limitCount >= 2) {
+      showToast('⚠️ Free demo limit reached. Please sign up to write unlimited proposals!', 'warning');
+      if (typeof showAuthOverlay === 'function') {
+        showAuthOverlay();
+      }
+      return true; // Blocked
+    }
+  }
+  return false; // Not blocked
+}
+
+function incrementGuestLimit() {
+  const user = window.currentUser ? window.currentUser() : null;
+  if (user && user.isGuest) {
+    let limitCount = parseInt(localStorage.getItem('winscope_guest_generations') || '0', 10);
+    limitCount++;
+    localStorage.setItem('winscope_guest_generations', limitCount.toString());
+  }
 }
 
 // ---- GENERATE PROPOSAL ----
 document.getElementById('generateBtn').addEventListener('click', async () => {
+  if (enforceGuestLimit()) return;
   const jobPost = document.getElementById('jobPost').value.trim();
   if (!jobPost || jobPost.length < 20) { shakeEl(document.getElementById('jobPost')); return; }
 
@@ -229,6 +260,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
       showToast('ℹ️ Running in Demo Mode. Connect AI or Upgrade to Pro for real AI proposals.', 'info');
     }
     renderResults(result);
+    incrementGuestLimit();
   } catch (err) {
     console.error(err);
     showToast('❌ Error: ' + err.message + ' — switching to Demo Mode.', 'error');
@@ -723,6 +755,7 @@ function copyOutput(elId, btn) {
 //  TAB 2: FIVERR BUYER REQUEST GENERATOR
 // ============================================================
 async function generateFiverrReply() {
+  if (enforceGuestLimit()) return;
   const request = document.getElementById('fiverrRequest')?.value.trim();
   if (!request || request.length < 15) { shakeEl(document.getElementById('fiverrRequest')); showToast('❌ Please paste a buyer request first.','error'); return; }
 
@@ -794,6 +827,7 @@ Output ONLY the reply message, nothing else.`;
     outputDiv.style.display = 'block';
     outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
     showToast('✅ Fiverr reply ready!', 'success');
+    incrementGuestLimit();
   } catch(e) {
     showToast('❌ Error: ' + e.message, 'error');
   } finally {
@@ -805,6 +839,7 @@ Output ONLY the reply message, nothing else.`;
 //  TAB 3: CLIENT MESSAGE WRITER
 // ============================================================
 async function generateClientReply() {
+  if (enforceGuestLimit()) return;
   const msg  = document.getElementById('clientMsg')?.value.trim();
   if (!msg || msg.length < 10) { shakeEl(document.getElementById('clientMsg')); showToast('❌ Please paste the client message first.','error'); return; }
 
@@ -867,6 +902,7 @@ Output ONLY the reply, nothing else.`;
     outputText.textContent = reply;
     outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
     showToast('✅ Client reply ready!', 'success');
+    incrementGuestLimit();
   } catch(e) {
     showToast('❌ Error: ' + e.message, 'error');
   }
@@ -876,6 +912,7 @@ Output ONLY the reply, nothing else.`;
 //  TAB 4: FOLLOW-UP GENERATOR
 // ============================================================
 async function generateFollowUp() {
+  if (enforceGuestLimit()) return;
   const context  = document.getElementById('followUpContext')?.value.trim();
   if (!context || context.length < 10) { shakeEl(document.getElementById('followUpContext')); showToast('❌ Please describe your original proposal first.','error'); return; }
 
@@ -935,6 +972,7 @@ Output ONLY the follow-up message.`;
     outputText.textContent = reply;
     outputDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
     showToast('✅ Follow-up message ready!', 'success');
+    incrementGuestLimit();
   } catch(e) {
     showToast('❌ Error: ' + e.message, 'error');
   }
@@ -1103,6 +1141,7 @@ function renderCESubjectLines(text) {
 //  TAB 5: COLD EMAIL GENERATOR — MAIN FUNCTION
 // ============================================================
 async function generateColdEmail() {
+  if (enforceGuestLimit()) return;
   const prospect = document.getElementById('ceProspectName')?.value.trim();
   const company  = document.getElementById('ceCompanyName')?.value.trim();
   const service  = document.getElementById('ceService')?.value.trim();
@@ -1236,7 +1275,7 @@ Rules for ALL emails:
 
     showToast('✅ Cold emails generated!', 'success');
     loadColdEmailHistory();
-
+    incrementGuestLimit();
   } catch(err) {
     cardIds.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = ''; });
     showToast('❌ Error: ' + err.message, 'error');
