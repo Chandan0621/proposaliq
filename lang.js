@@ -85,9 +85,9 @@ const T = {
   }
 };
 
-let currentLang = 'en';
+let currentLang = localStorage.getItem(LANG_KEY) || 'en';
 
-function t(key) { return T.en[key] || key; }
+function t(key) { return T[currentLang]?.[key] || T.en[key] || key; }
 
 function applyLanguage() {
   const lang = currentLang;
@@ -167,8 +167,22 @@ function applyLanguage() {
   const trialNote = document.getElementById('trialNoteEl');
   if (trialNote) trialNote.textContent = t('trialNote');
 
+  // Lang toggle button label
+  const langBtn = document.getElementById('langToggleBtn');
+  if (langBtn) {
+    langBtn.textContent = lang === 'en' ? '🌐 Switch to हिंदी' : '🌐 Switch to English';
+  }
+
   // Update html lang
-  document.documentElement.lang = 'en';
+  document.documentElement.lang = lang === 'hi' ? 'hi' : 'en';
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'hi' : 'en';
+  localStorage.setItem(LANG_KEY, currentLang);
+  applyLanguage();
+  const msg = currentLang === 'hi' ? 'Switched to Hindi (हिंदी)!' : 'Switched to English!';
+  if (typeof showToast === 'function') showToast(msg, 'success');
 }
 
 function setTxt(id, text) {
@@ -179,7 +193,8 @@ function setTxt(id, text) {
 // Init
 document.addEventListener('DOMContentLoaded', () => {
   applyLanguage();
+  document.getElementById('langToggleBtn')?.addEventListener('click', toggleLanguage);
 });
 
-window.currentLang = () => 'en';
+window.currentLang = () => currentLang;
 window.t = t;

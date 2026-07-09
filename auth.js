@@ -129,7 +129,10 @@ function updatePlanBadge(user) {
   const planEl   = document.getElementById('headerUserPlan');
   const trialEl  = document.getElementById('trialBadge');
   if (!user) return;
-  if (user.plan === 'trial') {
+  if (user.isGuest) {
+    if (planEl) { planEl.textContent = 'Free Demo'; planEl.style.color = ''; }
+    if (trialEl) trialEl.style.display = 'none';
+  } else if (user.plan === 'trial') {
     const days = getTrialDaysLeft(user);
     if (planEl) planEl.textContent = `Pro Trial · ${days}d left`;
     if (planEl) planEl.style.color = '#7c3aed';

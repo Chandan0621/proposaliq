@@ -198,6 +198,10 @@
   <header class="top-header">
     <div class="header-left">
       <button class="hamburger" id="hamburgerBtn">☰</button>
+      <div class="header-logo-mobile">
+        <div class="logo-icon-sm">WS</div>
+        <span class="logo-text-sm">Winscope</span>
+      </div>
       <div class="header-search">
         <span class="search-icon">🔎</span>
         <input type="text" placeholder="Search proposals, jobs..." class="search-input"/>
@@ -218,6 +222,8 @@
           <a href="https://chromewebstore.google.com/" target="_blank" class="overflow-item">🔌 Chrome Extension</a>
           <hr class="dropdown-divider"/>
           <button class="overflow-item" id="overflowSettings">⚙️ API Key Settings</button>
+          <hr class="dropdown-divider"/>
+          <button class="overflow-item" id="langToggleBtn">🌐 Switch to हिंदी</button>
         </div>
       </div>
       <div class="user-avatar" id="userAvatarMenu">
@@ -336,7 +342,7 @@
           <h2 class="panel-title">🛒 Fiverr Buyer Request Reply</h2>
           <span class="panel-badge done">Fiverr Mode</span>
         </div>
-        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Fiverr Buyer Requests have a unique format. Paste the request below to generate a tailored, professional response.</p>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Fiverr Buyer Requests have a different format. Paste it here to get the perfect reply.</p>
         <div class="form-group">
           <label class="form-label">Paste Buyer Request <span class="required">*</span></label>
           <textarea class="form-textarea" id="fiverrRequest" placeholder="Paste the Fiverr buyer request here... e.g. 'I need a logo designed for my bakery business. Budget: $30. Deadline: 3 days.'" rows="6"></textarea>
@@ -383,20 +389,20 @@
           <h2 class="panel-title">💬 Client Message Writer</h2>
           <span class="panel-badge" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;">New ✨</span>
         </div>
-        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Did a client send you a message? Generate a professional, high-converting reply instantly.</p>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Received a message from a client? Generate a professional reply here.</p>
         <div class="form-group">
-          <label class="form-label">Paste Client Message <span class="required">*</span></label>
+          <label class="form-label">Paste Client's Message <span class="required">*</span></label>
           <textarea class="form-textarea" id="clientMsg" placeholder="e.g. 'Hi, I reviewed your proposal. Can you tell me more about your experience with React? Also, can you finish this in 5 days?'" rows="5"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Message Type</label>
             <select class="form-select" id="clientMsgType">
-              <option value="inquiry">Client Inquiry (asking project questions)</option>
-              <option value="negotiation">Price Negotiation (discussing budget/rates)</option>
-              <option value="revision">Revision Request (asking for project changes)</option>
-              <option value="delay">Deadline Extension (asking for more time)</option>
-              <option value="complaint">Complaint / Dispute resolution</option>
+              <option value="inquiry">Client Inquiry (asking questions)</option>
+              <option value="negotiation">Price Negotiation (wants a lower rate)</option>
+              <option value="revision">Revision Request (wants changes)</option>
+              <option value="delay">Deadline Extension (needs more time)</option>
+              <option value="complaint">Complaint (something went wrong)</option>
               <option value="positive">Positive Feedback / Appreciation reply</option>
             </select>
           </div>
@@ -431,17 +437,17 @@
           <h2 class="panel-title">🔁 Follow-up Message Generator</h2>
           <span class="panel-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;">New ✨</span>
         </div>
-        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Client went silent? Generate smart, polite follow-up messages that get replies.</p>
+        <p style="color:#9ca3af;font-size:13px;margin-bottom:16px;">Client hasn't replied? Generate smart follow-up messages that actually get responses.</p>
         <div class="form-group">
-          <label class="form-label">Summary of Original Proposal or Last Message <span class="required">*</span></label>
+          <label class="form-label">Summary of Original Proposal / Message <span class="required">*</span></label>
           <textarea class="form-textarea" id="followUpContext" placeholder="e.g. 'I sent a proposal for a WordPress website project 3 days ago. Budget was $500. Client viewed but did not reply.'" rows="4"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Follow-up Number</label>
             <select class="form-select" id="followUpNumber">
-              <option value="1st">1st Follow-up (after 2-3 days)</option>
-              <option value="2nd">2nd Follow-up (after 1 week)</option>
+              <option value="1st">1st Follow-up (2-3 days later)</option>
+              <option value="2nd">2nd Follow-up (1 week later)</option>
               <option value="final">Final Follow-up (Last attempt)</option>
             </select>
           </div>
