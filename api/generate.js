@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
   const userEmail = req.headers['x-user-email'] || '';
 
   // Authorized if user is Pro/Trial OR is using the default Guest account
-  const isAuthorized = (userPlan === 'pro' || userPlan === 'trial' || userEmail === 'guest@winscope.app' || userEmail === 'guest@proposaliq.app');
+  const isAuthorized = (userPlan === 'pro' || userPlan === 'trial' || userEmail === 'guest@proposaliq.app' || userEmail === 'guest@winscope.app');
 
   if (!isAuthorized) {
     return res.status(403).json({ 
@@ -66,7 +66,7 @@ async function handleProposal(payload, apiKey, res) {
   
   if (apiKey) {
     try {
-      const prompt = `You are Winscope, an expert AI assistant for freelancers. Analyze this job post and return ONLY a raw JSON object (no markdown code blocks, no explanation, just raw JSON).
+      const prompt = `You are ProposalIQ, an expert AI assistant for freelancers. Analyze this job post and return ONLY a raw JSON object (no markdown code blocks, no explanation, just raw JSON).
 
 Job Post: """${jobPost}"""
 Skill Category: ${skill || 'General'}

@@ -1,4 +1,4 @@
-// popup.js — Winscope Chrome Extension Logic
+// popup.js — ProposalIQ Chrome Extension Logic
 
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 const KEY_STORE = 'piq_ext_apikey';
@@ -141,7 +141,7 @@ async function generate() {
 
 // ---- GEMINI API CALL ----
 async function callGemini(apiKey, jobPost, platform, tone) {
-  const prompt = `You are Winscope, an expert freelance proposal writer.
+  const prompt = `You are ProposalIQ, an expert freelance proposal writer.
 
 Analyze this job post and respond in JSON:
 Job Post: "${jobPost.substring(0, 2000)}"

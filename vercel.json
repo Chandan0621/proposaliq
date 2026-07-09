@@ -12,7 +12,7 @@
     { "src": "firebase-config.js", "use": "@vercel/static" },
     { "src": "google-config.js", "use": "@vercel/static" },
     { "src": "stripe-config.js", "use": "@vercel/static" },
-    { "src": "Winscope_Extension.zip", "use": "@vercel/static" }
+    { "src": "ProposalIQ_Extension.zip", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/generate", "dest": "api/generate.js" },

@@ -1,5 +1,5 @@
 // ============================================
-//  lang.js — Winscope Hindi/English Toggle
+//  lang.js — ProposalIQ Hindi/English Toggle
 // ============================================
 
 const LANG_KEY = 'piq_lang';
@@ -37,7 +37,7 @@ const T = {
     connectAI: '⚙️ Connect AI',
     outputLabel: '📝 Your AI Proposal',
     copyBtn: 'Copy', saveBtn: 'Save',
-    jobPlaceholder: 'Paste the full job description here... Winscope will analyze tone, requirements, budget signals, and client personality automatically.',
+    jobPlaceholder: 'Paste the full job description here... ProposalIQ will analyze tone, requirements, budget signals, and client personality automatically.',
     strategyDefault: 'Generate a proposal to see the recommended winning strategy.',
     loginTitle: 'Sign In', signupTitle: 'Create Account',
     skipDemo: 'Skip — try demo without account',
@@ -76,7 +76,7 @@ const T = {
     connectAI: '⚙️ AI Connect Karein',
     outputLabel: '📝 Aapka AI Proposal',
     copyBtn: 'Copy Karein', saveBtn: 'Save Karein',
-    jobPlaceholder: 'Poora job description yahan paste karein... Winscope aapki tone, requirements, budget signals aur client ki personality automatically analyze karega.',
+    jobPlaceholder: 'Poora job description yahan paste karein... ProposalIQ aapki tone, requirements, budget signals aur client ki personality automatically analyze karega.',
     strategyDefault: 'Proposal generate karein — winning strategy yahan dikhegi.',
     loginTitle: 'Sign In Karein', signupTitle: 'Account Banayein',
     skipDemo: 'Skip — bina account ke demo try karein',

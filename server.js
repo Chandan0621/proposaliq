@@ -25,7 +25,7 @@ app.post('/api/analyze', async (req, res) => {
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
       const prompt = `
-You are Winscope, an expert AI assistant for freelancers. Analyze the following job post and return ONLY a valid JSON object (no markdown, no explanation, just raw JSON).
+You are ProposalIQ, an expert AI assistant for freelancers. Analyze the following job post and return ONLY a valid JSON object (no markdown, no explanation, just raw JSON).
 
 Job Post: """${jobPost}"""
 Freelancer Skill: ${skill || 'General'}
@@ -185,7 +185,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
 // ---- START ----
 app.listen(PORT, () => {
-  console.log(`✅ Winscope server running on port ${PORT}`);
+  console.log(`✅ ProposalIQ server running on port ${PORT}`);
   if (!process.env.GEMINI_API_KEY) {
     console.log('⚠️  GEMINI_API_KEY not set — running in simulation mode');
   } else {

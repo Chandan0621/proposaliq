@@ -1,4 +1,4 @@
-// stripe-config.js — Winscope Payment Links
+// stripe-config.js — ProposalIQ Payment Links
 // Create a payment link from the Stripe dashboard and paste it here
 // Free: https://dashboard.stripe.com → Payment Links → Create
 

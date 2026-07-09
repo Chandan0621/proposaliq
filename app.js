@@ -3,8 +3,8 @@
 //  Real Gemini AI (BYOK)
 // ======================
 
-const STORAGE_KEY = 'winscope_gemini_key';
-const BACKWARD_STORAGE_KEY = 'proposaliq_gemini_key';
+const STORAGE_KEY = 'proposaliq_gemini_key';
+const BACKWARD_STORAGE_KEY = 'winscope_gemini_key';
 
 // ---- API KEY MANAGEMENT ----
 function getApiKey() { return localStorage.getItem(STORAGE_KEY) || localStorage.getItem(BACKWARD_STORAGE_KEY) || ''; }
@@ -188,7 +188,7 @@ function shouldCallBackend() {
   if (!user) return false;
   if (user.plan === 'pro' || user.plan === 'trial') return true;
   if (user.isGuest) {
-    const limitCount = parseInt(localStorage.getItem('winscope_guest_generations') || '0', 10);
+    const limitCount = parseInt(localStorage.getItem('proposaliq_guest_generations') || '0', 10);
     return limitCount < 2;
   }
   return false;
@@ -197,7 +197,7 @@ function shouldCallBackend() {
 function enforceGuestLimit() {
   const user = window.currentUser ? window.currentUser() : null;
   if (user && user.isGuest) {
-    const limitCount = parseInt(localStorage.getItem('winscope_guest_generations') || '0', 10);
+    const limitCount = parseInt(localStorage.getItem('proposaliq_guest_generations') || '0', 10);
     if (limitCount >= 2) {
       showToast('⚠️ Free demo limit reached. Please sign up to write unlimited proposals!', 'warning');
       if (typeof showAuthOverlay === 'function') {
@@ -212,9 +212,9 @@ function enforceGuestLimit() {
 function incrementGuestLimit() {
   const user = window.currentUser ? window.currentUser() : null;
   if (user && user.isGuest) {
-    let limitCount = parseInt(localStorage.getItem('winscope_guest_generations') || '0', 10);
+    let limitCount = parseInt(localStorage.getItem('proposaliq_guest_generations') || '0', 10);
     limitCount++;
-    localStorage.setItem('winscope_guest_generations', limitCount.toString());
+    localStorage.setItem('proposaliq_guest_generations', limitCount.toString());
   }
 }
 
@@ -274,7 +274,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
 
 // ---- GEMINI DIRECT API CALL ----
 async function callGeminiAI(jobPost, skill, exp, tone, platform, apiKey) {
-  const prompt = `You are Winscope, an expert AI assistant for freelancers. Analyze this job post and return ONLY a raw JSON object (no markdown code blocks, no explanation, just raw JSON).
+  const prompt = `You are ProposalIQ, an expert AI assistant for freelancers. Analyze this job post and return ONLY a raw JSON object (no markdown code blocks, no explanation, just raw JSON).
 
 Job Post: """${jobPost}"""
 Skill Category: ${skill}
@@ -1026,7 +1026,7 @@ function exportColdEmailsTXT() {
   const company  = document.getElementById('ceCompanyName')?.value.trim() || 'Company';
   const ids = ['ceSubjectLines','ceEmailA','ceEmailB','ceFollowup1','ceFollowup2','ceLinkedIn'];
   const labels = ['5 SUBJECT LINES','COLD EMAIL VERSION A','COLD EMAIL VERSION B','FOLLOW-UP EMAIL #1','FOLLOW-UP EMAIL #2','LINKEDIN OUTREACH MESSAGE'];
-  let content = `WINSCOPE — COLD EMAIL GENERATOR\nGenerated for: ${prospect} @ ${company}\nDate: ${new Date().toLocaleDateString()}\n${'='.repeat(50)}\n\n`;
+  let content = `PROPOSALIQ — COLD EMAIL GENERATOR\nGenerated for: ${prospect} @ ${company}\nDate: ${new Date().toLocaleDateString()}\n${'='.repeat(50)}\n\n`;
   ids.forEach((id, i) => {
     const el = document.getElementById(id);
     if (el && el.innerText.trim()) {
@@ -1046,8 +1046,8 @@ function exportColdEmailsTXT() {
   showToast('✅ TXT file downloaded!', 'success');
 }
 
-const CE_HISTORY_KEY = 'winscope_ce_history';
-const BACKWARD_CE_HISTORY_KEY = 'proposaliq_ce_history';
+const CE_HISTORY_KEY = 'proposaliq_ce_history';
+const BACKWARD_CE_HISTORY_KEY = 'winscope_ce_history';
 
 function getColdEmailHistoryRaw() {
   return localStorage.getItem(CE_HISTORY_KEY) || localStorage.getItem(BACKWARD_CE_HISTORY_KEY) || '[]';

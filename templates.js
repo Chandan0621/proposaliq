@@ -286,7 +286,7 @@ function downloadTemplate() {
   const blob = new Blob([text], { type: 'text/plain' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `${(cat?.name||'Proposal').replace(/\s+/g,'_')}_Winscope.txt`;
+  a.download = `${(cat?.name||'Proposal').replace(/\s+/g,'_')}_ProposalIQ.txt`;
   a.click();
   if (typeof showToast === 'function') showToast('📥 Downloaded!', 'success');
 }
