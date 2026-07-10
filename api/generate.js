@@ -97,12 +97,13 @@ Return exactly this JSON structure:
 }
 
 CRITICAL COPYWRITING GUIDELINES FOR THE "proposal" FIELD:
-1. NO AI CLICHES: Never use generic openings like "Dear Hiring Manager", "I am writing to express my interest...", "I read your job post with great interest...", or "I am a skilled developer with X years of experience...".
-2. PREVIEW HOOK: Start directly (first 2 sentences) by addressing their specific problem or project goal, demonstrating instant understanding. This is crucial for preview listings on ${platform}.
-3. MY SOLUTION/APPROACH: Provide a clear, bulleted list (using '•') of 3 precise implementation steps tailored to this specific job post.
-4. PROOF / WHY ME: State 1-2 powerful differentiators or measurable results relevant to their project. Keep it natural, not salesy.
-5. OPEN-ENDED QUESTION: End with a single, simple, action-oriented closing question (e.g. "Do you have 5 minutes for a quick chat to discuss the dashboard layout?") to encourage them to reply. Do not ask generic questions like "When can we start?".
-6. FORMATTING: Use double line breaks \\n\\n between sections and bullet points for readability. Avoid markdown bold headers in the proposal text, keep it clean.`;
+1. NO AI CLICHES & MAX PERSONALIZATION: Never use generic openings like "Dear Hiring Manager", "I am writing to express my interest...", etc. If the job post explicitly warns against generic proposals, says "we read every application", or similar, maximize personalization by quoting or paraphrasing specific details directly from their post instead of using template text.
+2. PAIN POINT HOOK (FIRST 1-2 SENTENCES): Open by directly extracting and referencing the client's specific pain points, complaints, or concerns mentioned in the job description (e.g., if they complain about fluff writers, address that directly). Do NOT use generic phrases like "this is a business opportunity". Address the core problem immediately.
+3. MANDATORY INCLUSIONS: Check if the job description explicitly requests specific items (look for phrases like "please include", "make sure to", "don't forget", "send me your", etc.). The generated proposal MUST address each requested item specifically (e.g., mention samples, turnaround time, research approach if requested).
+4. NO LAZY PHASES / TIMELINES FOR NON-TECH: For non-development/non-technical jobs (e.g. writing, design, marketing), do NOT use generic "Phase 1/Phase 2/Phase 3" or "Day 1/Day 2" project-timeline structures. Only use phased timelines if the job description explicitly describes a multi-stage technical or software development project. Otherwise, present a clean, direct solution.
+5. EMOJI USAGE: Do NOT use emojis (like 📌, ⚡) by default. Use plain professional text unless the job description itself has a casual, informal, or highly emoji-rich tone.
+6. BUDGET & PRICING: If the job description mentions a budget or price range, reference realistic pricing aligned with that range, or ask a clarifying question about the project scope if the range is too wide.
+7. STRUCTURE & FORMATTING: Use double line breaks \\n\\n between paragraphs and bullet points for readability. Keep it under 250 words. End with a single, simple, action-oriented closing question.`;
 
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });

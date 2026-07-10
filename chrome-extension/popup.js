@@ -150,13 +150,22 @@ Tone: ${tone}
 
 Return ONLY valid JSON:
 {
-  "proposal": "Complete professional ${tone} proposal (250-350 words)",
+  "proposal": "A tailored, conversion-optimized, professional proposal in ${tone} tone for ${platform}. It must strictly adhere to the guidelines below.",
   "reply_chance": 78,
   "scam_risk": 12,
   "ghosting_risk": 25,
   "budget_seriousness": 80,
   "strategy": "One clear winning strategy sentence"
-}`;
+}
+
+CRITICAL PROPOSAL GUIDELINES:
+1. Open by directly referencing the client's specific pain points, complaints, or concerns mentioned in the job description in the first 1-2 sentences. Avoid generic "this is a business opportunity" style phrases.
+2. Address any requested inclusions (e.g. "please include samples", "make sure to mention timeline") specifically.
+3. No phased timelines (e.g. Phase 1/Phase 2) for non-technical/non-dev jobs.
+4. No emojis by default. Use them only if the job post itself is casual/informal.
+5. Reference realistic pricing aligned with their mentioned budget range, if any.
+6. Maximize personalization if the post warns against template/generic proposals.
+7. Under 250 words. End with a single, action-oriented closing question.`;
 
   const res = await fetch(`${API_URL}?key=${apiKey}`, {
     method: 'POST',
