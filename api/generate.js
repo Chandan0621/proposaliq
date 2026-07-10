@@ -68,77 +68,64 @@ async function handleProposal(payload, apiKey, res) {
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
 
-      // ─── CALL 1: Analysis JSON (short, clean prompt → always parseable JSON) ───
-      const analysisPrompt = `Analyze this freelance job post. Return ONLY a valid JSON object — no markdown, no explanation.
+      // Single call — gemini-2.0-flash (higher free quota than 2.5-flash)
+      // Proposal rules come FIRST, then JSON schema — Gemini reads rules as instructions
+      const prompt = `You are an expert freelance proposal writer and job analyzer.
 
+=== PROPOSAL WRITING RULES (use these when filling the "proposal" field) ===
+1. First sentence MUST reference the client's specific frustration or explicit request from the job post. NEVER write "Your project caught my attention" or "I came across your posting".
+2. If the client asks for specific things (samples, turnaround time, approach) — address EVERY one directly. Do not skip any.
+3. No fake claims like "10+ projects" or "20% faster". Be honest and specific.
+4. No bullet points, arrows, emojis, or phase/step timelines.
+5. No words: "excited", "thrilled", "passionate", "ensure", "leverage", "robust", "cutting-edge", "streamline", "look no further".
+6. If a budget is mentioned, reference it naturally.
+7. Keep proposal under 150 words.
+8. End with ONE specific question about this project.
+9. Write in first-person, confident, conversational tone — like a real human freelancer wrote it.
+
+=== JOB DETAILS ===
 Job Post: """${jobPost}"""
 Skill: ${skill || 'General'}
 Experience: ${exp || 'Intermediate'}
+Tone: ${tone || 'professional'}
 Platform: ${platform || 'Upwork'}
 
-Return exactly this JSON:
-{"replyChance":75,"clientPersonality":"Quality Seeker","urgencyLevel":"Medium","urgencyScore":50,"budgetSeriousness":"Moderate","budgetScore":60,"ghostingRisk":"Low","ghostScore":25,"scamRisk":"Low","scamScore":10,"copywritingScore":100,"pricingConfidence":70,"recommendedStrategy":"2-3 sentence strategy here.","painPoints":["point1","point2","point3","point4"],"clientWants":["want1","want2","want3","want4"],"thingsToAvoid":["avoid1","avoid2","avoid3","avoid4"],"aiTips":["tip1","tip2","tip3","tip4"]}`;
+=== OUTPUT ===
+Return ONLY this JSON object — no markdown, no explanation:
+{"replyChance":75,"clientPersonality":"Quality Seeker","urgencyLevel":"Medium","urgencyScore":50,"budgetSeriousness":"Moderate","budgetScore":60,"ghostingRisk":"Low","ghostScore":25,"scamRisk":"Low","scamScore":10,"copywritingScore":100,"pricingConfidence":70,"recommendedStrategy":"Write 2-3 sentence actionable strategy here.","painPoints":["specific pain point 1","specific pain point 2","specific pain point 3","specific pain point 4"],"clientWants":["specific want 1","specific want 2","specific want 3","specific want 4"],"thingsToAvoid":["avoid 1","avoid 2","avoid 3","avoid 4"],"aiTips":["tip 1","tip 2","tip 3","tip 4"],"proposal":"Write the full proposal here following the 9 rules above. Reference the client's specific words. Under 150 words. End with a question."}`;
 
-      // ─── CALL 2: Proposal text (pure text prompt → no JSON parsing needed) ───
-      const proposalPrompt = `Write a freelance proposal for this job. Return ONLY the proposal text — no JSON, no labels, no explanation.
-
-JOB POST:
-"""${jobPost}"""
-
-TONE: ${tone || 'professional'}
-PLATFORM: ${platform || 'Upwork'}
-
-RULES (follow every single one):
-1. First sentence MUST directly reference the client's specific frustration, complaint, or explicit request from the job post. Never write "Your project caught my attention" or "I came across your posting".
-2. If the client asks for specific things (samples, turnaround time, approach, examples) — address EVERY one. Do not skip any.
-3. No fake claims like "10+ projects" or "20% faster". Write specific, honest sentences only.
-4. No bullet points, no arrows, no emojis, no phase/step timelines.
-5. No words: "excited", "thrilled", "passionate", "ensure", "leverage", "robust", "cutting-edge", "streamline".
-6. If budget is mentioned in the job post, reference it naturally in one sentence.
-7. Keep it under 150 words total.
-8. End with exactly ONE specific question about this project.
-
-Write the proposal now:`;
-
-      // ─── Run both calls in parallel ───
-      const analysisModel = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash',
-        generationConfig: { temperature: 0.3, maxOutputTokens: 800, responseMimeType: 'application/json' }
-      });
-      const proposalModel = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash',
-        generationConfig: { temperature: 0.85, maxOutputTokens: 600 }
+      const model = genAI.getGenerativeModel({
+        model: 'gemini-2.0-flash',
+        generationConfig: {
+          temperature: 0.8,
+          maxOutputTokens: 1500,
+          responseMimeType: 'application/json'
+        }
       });
 
-      const [analysisResult, proposalResult] = await Promise.all([
-        analysisModel.generateContent({ contents: [{ parts: [{ text: analysisPrompt }] }] }),
-        proposalModel.generateContent({ contents: [{ parts: [{ text: proposalPrompt }] }] })
-      ]);
+      const result = await model.generateContent({
+        contents: [{ parts: [{ text: prompt }] }]
+      });
+      const text = result.response.text().trim();
 
-      const analysisText = analysisResult.response.text().trim();
-      const proposalText = proposalResult.response.text().trim();
-
-      // Parse analysis JSON (multiple fallback strategies)
-      let analysisData = null;
-      const jsonStrategies = [
-        () => { const m = analysisText.match(/```json\s*([\s\S]*?)```/i); return m ? m[1].trim() : null; },
-        () => { const m = analysisText.match(/```\s*([\s\S]*?)```/); return m ? m[1].trim() : null; },
-        () => { const m = analysisText.match(/\{[\s\S]*\}/); return m ? m[0] : null; },
-        () => analysisText
+      // Robust JSON extraction (fallback strategies)
+      let parsed = null;
+      const strategies = [
+        () => { const m = text.match(/```json\s*([\s\S]*?)```/i); return m ? m[1].trim() : null; },
+        () => { const m = text.match(/```\s*([\s\S]*?)```/); return m ? m[1].trim() : null; },
+        () => { const m = text.match(/\{[\s\S]*\}/); return m ? m[0] : null; },
+        () => text
       ];
-      for (const strategy of jsonStrategies) {
-        try { const c = strategy(); if (c) { analysisData = JSON.parse(c); break; } } catch (_) {}
+      for (const s of strategies) {
+        try { const c = s(); if (c) { parsed = JSON.parse(c); break; } } catch (_) {}
       }
 
-      if (!analysisData) {
-        console.error('[ProposalIQ] Analysis JSON parse failed. Raw:', analysisText.substring(0, 300));
-        return res.status(200).json({ success: false, error: 'Analysis JSON parse failed — check Vercel logs', rawResponse: analysisText.substring(0, 300) });
+      if (!parsed) {
+        console.error('[ProposalIQ] JSON parse failed. Raw (first 400 chars):', text.substring(0, 400));
+        return res.status(200).json({ success: false, error: 'Response parse failed', rawResponse: text.substring(0, 400) });
       }
 
-      // Attach proposal text directly (no JSON parsing needed — it's plain text)
-      analysisData.proposal = proposalText;
-
-      return res.status(200).json({ success: true, source: 'gemini', data: analysisData });
+      return res.status(200).json({ success: true, source: 'gemini', data: parsed });
 
     } catch (err) {
       console.error('[ProposalIQ] Gemini call failed:', err.message);
@@ -150,6 +137,7 @@ Write the proposal now:`;
   const data = simulateProposal(jobPost, skill, exp, tone, platform);
   return res.status(200).json({ success: true, source: 'simulation', data });
 }
+
 
 // ==========================================
 //  FIVERR BUYER REQUEST HANDLER
