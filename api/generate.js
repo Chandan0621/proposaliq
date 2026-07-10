@@ -95,7 +95,7 @@ Return ONLY this JSON object — no markdown, no explanation:
 {"replyChance":75,"clientPersonality":"Quality Seeker","urgencyLevel":"Medium","urgencyScore":50,"budgetSeriousness":"Moderate","budgetScore":60,"ghostingRisk":"Low","ghostScore":25,"scamRisk":"Low","scamScore":10,"copywritingScore":100,"pricingConfidence":70,"recommendedStrategy":"Write 2-3 sentence actionable strategy here.","painPoints":["specific pain point 1","specific pain point 2","specific pain point 3","specific pain point 4"],"clientWants":["specific want 1","specific want 2","specific want 3","specific want 4"],"thingsToAvoid":["avoid 1","avoid 2","avoid 3","avoid 4"],"aiTips":["tip 1","tip 2","tip 3","tip 4"],"proposal":"Write the full proposal here following the 9 rules above. Reference the client's specific words. Under 150 words. End with a question."}`;
 
       const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.5-flash',
         generationConfig: {
           temperature: 0.8,
           maxOutputTokens: 8192,
