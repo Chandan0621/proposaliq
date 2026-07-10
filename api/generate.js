@@ -129,6 +129,10 @@ STEP 2 — Write the proposal using ONLY these rules:
 
 9. CLOSING: End with ONE specific, low-friction question or next step related to THIS project.
 
+10. NO AI SIGNATURE OR BUZZWORDS: Banish words like "excited", "thrilled", "delighted", "passion", "ensure", "robust", "leverage", "look no further", "streamline", "cutting-edge", or "business opportunity". Do not use transition words like "Additionally", "Moreover", "Furthermore", or "In summary" to start paragraphs. 
+
+11. NATURAL CONVERSATIONAL TONE: Write in the first-person active voice of an individual professional freelancer. Use a relaxed, confident, plainspoken tone. Vary sentence structures and lengths to make it feel human and written by hand, not perfectly generated.
+
 STEP 3 — Before finalizing, silently check: "Did I address every single explicit request the client made? Did I reference their specific pain point? Did I avoid all generic claims and fake bullet formatting?" If any answer is no, rewrite before returning the output.
 ---`;
 

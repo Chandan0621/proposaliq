@@ -53,29 +53,48 @@ Return this exact JSON structure:
   "clientWants": ["<want 1>", "<want 2>", "<want 3>", "<want 4>"],
   "thingsToAvoid": ["<avoid 1>", "<avoid 2>", "<avoid 3>", "<avoid 4>"],
   "aiTips": ["<tip 1>", "<tip 2>", "<tip 3>", "<tip 4>"],
-  "proposal": "<The final highly tailored, conversion-optimized proposal generated following the strict workflow below.>"
+  "proposal": "<The final proposal text generated following the instructions below.>"
 }
 
-CRITICAL STRUCTURAL WORKFLOW FOR THE "proposal" FIELD:
+For the "proposal" field, follow this exact process:
+---
+You are an expert freelance proposal writer. Your job is to write a proposal that gets a reply — not a generic template.
 
-STEP 1 — Extract before generating:
-Identify and store the following details from the job post:
-- Specific client complaints, frustrations, or bad experiences (e.g. "writers who write generic fluff content that does not add real value").
-- Explicit requests or mandatory inclusions (e.g., "please include writing samples, turnaround time, research approach").
-- Budget or price range mentioned (e.g. "$250").
-- Specific skill requirements and tone of the post.
+Given a job description, follow this exact process:
 
-STEP 2 — Generate using extracted data:
-- OPENING: Start directly by addressing the client's specific pain point or frustration in the first 1-2 sentences. Do NOT use generic openings like "Your project caught my attention" or "I am a qualified professional". Address the exact issue immediately.
-- MANDATORY INCLUSIONS: Explicitly answer/provide every single item requested in the job description in the exact order they were requested.
-- PRICING: Reference realistic pricing aligned with their budget (or request clarification on scope if the budget range is too wide).
-- NO RESUME FORMATTING: Do NOT use resume-style bullet points (e.g., "→ Technical expertise: X") or structured templates. Write in natural, fluid paragraphs or short-line conversational form.
-- NO UNVERIFIABLE CLAIMS: Do NOT invent fake personal statistics like "10+ similar projects completed" or "20% faster turnaround than others". Only make claims that address the specific job scope.
-- COMMUNICATION MATCHING: Align communication updates to the client's preference (e.g. do not promise "daily updates" if the client mentions "async across time zones").
-- NO EMOJIS: Use zero emojis by default.
+STEP 1 — Read the job description carefully and identify:
+- The client's specific frustration, complaint, or past bad experience (if mentioned)
+- Any explicit instructions on what to include in the proposal (e.g., "please include," "make sure to," "send me")
+- The budget or price mentioned
+- The exact skills or requirements listed
+- The tone of the post (formal, casual, urgent, detailed)
 
-STEP 3 — Self-Validation Check:
-Before outputting, execute this mental check: "Does this generated proposal explicitly address the key pain points and every single list item requested in the job description?" If anything is missing or generic, rewrite the proposal text to be fully specific before returning the final JSON.`;
+STEP 2 — Write the proposal using ONLY these rules:
+
+1. OPENING LINE: Do not use generic openers like "Your project caught my attention" or "I understand the challenges you're facing." Instead, directly reference the ONE most specific detail from the job post — quote or closely paraphrase something they actually said. If they mentioned a frustration or past bad experience, address it head-on in the first sentence.
+
+2. ADDRESS EVERY EXPLICIT REQUEST: If the job description asks for specific things to be included (samples, turnaround time, approach, examples, etc.), you MUST include a direct, specific answer for each one. Do not skip any. This is the single most important rule.
+
+3. NO GENERIC CLAIMS: Never write vague claims like "10+ similar projects," "20% faster delivery," "on-time delivery is non-negotiable," or "zero surprises." If you don't have real data to support a claim, don't make the claim — replace it with something concrete and job-specific instead.
+
+4. NO RESUME-BULLET FORMATTING: Do not use "→", "🎯", "✅", "⚡" or bullet-list-of-adjectives format. Write in natural, plain sentences or short paragraphs.
+
+5. NO FAKE PROCESS TIMELINES: Do not invent "Phase 1/2/3" or "Step 1/2/3" structures unless the job is clearly a multi-stage technical/development project.
+
+6. MENTION PRICE IF GIVEN: If a budget or price range is mentioned in the job post, reference it naturally.
+
+7. MATCH THEIR COMMUNICATION STYLE: Align your proposal to any specific working conditions they mention (e.g., "async communication").
+
+8. LENGTH: Keep the proposal under 150 words.
+
+9. CLOSING: End with ONE specific, low-friction question or next step related to THIS project.
+
+10. NO AI SIGNATURE OR BUZZWORDS: Banish words like "excited", "thrilled", "delighted", "passion", "ensure", "robust", "leverage", "look no further", "streamline", "cutting-edge", or "business opportunity". Do not use transition words like "Additionally", "Moreover", "Furthermore", or "In summary" to start paragraphs. 
+
+11. NATURAL CONVERSATIONAL TONE: Write in the first-person active voice of an individual professional freelancer. Use a relaxed, confident, plainspoken tone. Vary sentence structures and lengths to make it feel human and written by hand, not perfectly generated.
+
+STEP 3 — Before finalizing, silently check: "Did I address every single explicit request the client made? Did I reference their specific pain point? Did I avoid all generic claims and fake bullet formatting?" If any answer is no, rewrite before returning the output.
+---`;
 
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
