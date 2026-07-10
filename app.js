@@ -262,8 +262,25 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     renderResults(result);
     incrementGuestLimit();
   } catch (err) {
-    console.error(err);
-    showToast('❌ Error: ' + err.message + ' — switching to Demo Mode.', 'error');
+    console.error('🔴 [ProposalIQ] PROPOSAL GENERATION FAILED:', err);
+
+    // Show a detailed visible error banner with the exact error
+    const errCode = err.message.match(/\[(\d{3})\]/)?.[1] || 'ERR';
+    let errHint = '';
+    if (errCode === '401') errHint = ' (Invalid API Key — key is wrong or expired)';
+    else if (errCode === '403') errHint = ' (Permission Denied — key may not have Gemini API access)';
+    else if (errCode === '429') errHint = ' (Rate Limit / Quota Exceeded — too many requests)';
+    else if (errCode === '400') errHint = ' (Bad Request — check API key format)';
+    else if (errCode === '500') errHint = ' (Gemini Server Error — try again in a moment)';
+
+    const errMsg = `❌ API Error [${errCode}]${errHint}: ${err.message}`;
+    showToast(errMsg, 'error');
+    console.warn('🔴 [ProposalIQ] Falling back to Demo Mode after error:', err.message);
+
+    // Show error inline above output panel too
+    const badge = document.getElementById('analysisBadge');
+    if (badge) { badge.textContent = `⚠️ Error ${errCode}`; badge.className = 'panel-badge error'; }
+
     const result = simulateAnalysis(jobPost, skill, exp, tone, platform);
     document.getElementById('analysisBadge').textContent = '⚡ Demo Mode';
     renderResults(result);
@@ -355,16 +372,30 @@ STEP 3 — Before finalizing, silently check: "Did I address every single explic
     })
   });
 
-  if (resp.status === 400) throw new Error('Invalid API key. Please check your Gemini API key.');
-  if (resp.status === 429) throw new Error('API quota exceeded. Please try again later.');
-  if (!resp.ok) throw new Error(`API error ${resp.status}`);
+  // ---- FULL ERROR LOGGING ----
+  if (!resp.ok) {
+    let errBody = '';
+    try { errBody = await resp.text(); } catch (_) {}
+    let errMsg = '';
+    try { const errJson = JSON.parse(errBody); errMsg = errJson?.error?.message || errBody; } catch (_) { errMsg = errBody; }
+    const detail = `Gemini API Error — HTTP ${resp.status}\nMessage: ${errMsg || '(no message)'}`;
+    console.error('🔴 [ProposalIQ] ' + detail);
+    console.error('🔴 [ProposalIQ] Raw error body:', errBody);
+    throw new Error(`[${resp.status}] ${errMsg || resp.statusText || 'Unknown error'}`);
+  }
 
   const data = await resp.json();
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-  if (!text) throw new Error('Empty AI response');
+  if (!text) {
+    console.error('🔴 [ProposalIQ] Gemini returned empty response. Full response:', JSON.stringify(data));
+    throw new Error('Empty AI response — check console for full Gemini response');
+  }
 
   const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error('Could not parse AI response');
+  if (!jsonMatch) {
+    console.error('🔴 [ProposalIQ] Could not parse JSON from Gemini response. Raw text:', text);
+    throw new Error('Could not parse AI response — check console for raw text');
+  }
 
   return JSON.parse(jsonMatch[0]);
 }
@@ -394,16 +425,31 @@ async function callBackendAI(type, payload) {
       headers: headers,
       body: JSON.stringify({ type, payload })
     });
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success) {
-        return data;
+
+    // ---- FULL BACKEND ERROR LOGGING ----
+    const rawBody = await response.text();
+    let parsedBody;
+    try { parsedBody = JSON.parse(rawBody); } catch (_) { parsedBody = null; }
+
+    if (!response.ok) {
+      const detail = `Backend /api/generate Error — HTTP ${response.status}\nBody: ${rawBody}`;
+      console.error('🔴 [ProposalIQ] ' + detail);
+      throw new Error(`Backend error [${response.status}]: ${parsedBody?.error || rawBody || response.statusText}`);
+    }
+
+    if (parsedBody && parsedBody.success) {
+      if (!parsedBody.data?.proposal && parsedBody.error) {
+        console.error('🔴 [ProposalIQ] Backend returned success=false. Error:', parsedBody.error, '| Stack:', parsedBody.stack || '');
       }
+      return parsedBody;
+    } else {
+      console.error('🔴 [ProposalIQ] Backend returned success=false. Full body:', rawBody);
+      throw new Error(parsedBody?.error || 'Backend returned no data');
     }
   } catch (e) {
-    console.warn('Backend call failed:', e);
+    console.error('🔴 [ProposalIQ] callBackendAI exception:', e.message);
+    throw e;
   }
-  return null;
 }
 
 // ---- RENDER RESULTS ----
