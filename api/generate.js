@@ -93,17 +93,29 @@ Return exactly this JSON structure:
   "clientWants": ["<want1>","<want2>","<want3>","<want4>"],
   "thingsToAvoid": ["<avoid1>","<avoid2>","<avoid3>","<avoid4>"],
   "aiTips": ["<tip1>","<tip2>","<tip3>","<tip4>"],
-  "proposal": "<A highly tailored, conversion-optimized, professional proposal in ${tone} tone for ${platform}. It must strictly adhere to the copywriting guidelines below. Max 200 words. Use double newlines \\n\\n for paragraph breaks.>"
+  "proposal": "<The final highly tailored, conversion-optimized proposal generated following the strict workflow below.>"
 }
 
-CRITICAL COPYWRITING GUIDELINES FOR THE "proposal" FIELD:
-1. NO AI CLICHES & MAX PERSONALIZATION: Never use generic openings like "Dear Hiring Manager", "I am writing to express my interest...", etc. If the job post explicitly warns against generic proposals, says "we read every application", or similar, maximize personalization by quoting or paraphrasing specific details directly from their post instead of using template text.
-2. PAIN POINT HOOK (FIRST 1-2 SENTENCES): Open by directly extracting and referencing the client's specific pain points, complaints, or concerns mentioned in the job description (e.g., if they complain about fluff writers, address that directly). Do NOT use generic phrases like "this is a business opportunity". Address the core problem immediately.
-3. MANDATORY INCLUSIONS: Check if the job description explicitly requests specific items (look for phrases like "please include", "make sure to", "don't forget", "send me your", etc.). The generated proposal MUST address each requested item specifically (e.g., mention samples, turnaround time, research approach if requested).
-4. NO LAZY PHASES / TIMELINES FOR NON-TECH: For non-development/non-technical jobs (e.g. writing, design, marketing), do NOT use generic "Phase 1/Phase 2/Phase 3" or "Day 1/Day 2" project-timeline structures. Only use phased timelines if the job description explicitly describes a multi-stage technical or software development project. Otherwise, present a clean, direct solution.
-5. EMOJI USAGE: Do NOT use emojis (like 📌, ⚡) by default. Use plain professional text unless the job description itself has a casual, informal, or highly emoji-rich tone.
-6. BUDGET & PRICING: If the job description mentions a budget or price range, reference realistic pricing aligned with that range, or ask a clarifying question about the project scope if the range is too wide.
-7. STRUCTURE & FORMATTING: Use double line breaks \\n\\n between paragraphs and bullet points for readability. Keep it under 250 words. End with a single, simple, action-oriented closing question.`;
+CRITICAL STRUCTURAL WORKFLOW FOR THE "proposal" FIELD:
+
+STEP 1 — Extract before generating:
+Identify and store the following details from the job post:
+- Specific client complaints, frustrations, or bad experiences (e.g. "writers who write generic fluff content that does not add real value").
+- Explicit requests or mandatory inclusions (e.g., "please include writing samples, turnaround time, research approach").
+- Budget or price range mentioned (e.g. "$250").
+- Specific skill requirements and tone of the post.
+
+STEP 2 — Generate using extracted data:
+- OPENING: Start directly by addressing the client's specific pain point or frustration in the first 1-2 sentences. Do NOT use generic openings like "Your project caught my attention" or "I am a qualified professional". Address the exact issue immediately.
+- MANDATORY INCLUSIONS: Explicitly answer/provide every single item requested in the job description in the exact order they were requested.
+- PRICING: Reference realistic pricing aligned with their budget (or request clarification on scope if the budget range is too wide).
+- NO RESUME FORMATTING: Do NOT use resume-style bullet points (e.g., "→ Technical expertise: X") or structured templates. Write in natural, fluid paragraphs or short-line conversational form.
+- NO UNVERIFIABLE CLAIMS: Do NOT invent fake personal statistics like "10+ similar projects completed" or "20% faster turnaround than others". Only make claims that address the specific job scope.
+- COMMUNICATION MATCHING: Align communication updates to the client's preference (e.g. do not promise "daily updates" if the client mentions "async across time zones").
+- NO EMOJIS: Use zero emojis by default.
+
+STEP 3 — Self-Validation Check:
+Before outputting, execute this mental check: "Does this generated proposal explicitly address the key pain points and every single list item requested in the job description?" If anything is missing or generic, rewrite the proposal text to be fully specific before returning the final JSON.`;
 
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });

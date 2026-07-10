@@ -53,16 +53,29 @@ Return this exact JSON structure:
   "clientWants": ["<want 1>", "<want 2>", "<want 3>", "<want 4>"],
   "thingsToAvoid": ["<avoid 1>", "<avoid 2>", "<avoid 3>", "<avoid 4>"],
   "aiTips": ["<tip 1>", "<tip 2>", "<tip 3>", "<tip 4>"],
-  "proposal": "<A highly tailored, conversion-optimized, professional proposal in ${tone} tone for ${platform}. It must strictly adhere to the copywriting guidelines below. Max 200 words. Use double newlines \\n\\n for paragraph breaks.>"
+  "proposal": "<The final highly tailored, conversion-optimized proposal generated following the strict workflow below.>"
 }
 
-CRITICAL COPYWRITING GUIDELINES FOR THE "proposal" FIELD:
-1. NO AI CLICHES: Never use generic openings like "Dear Hiring Manager", "I am writing to express my interest...", "I read your job post with great interest...", or "I am a skilled developer with X years of experience...".
-2. PREVIEW HOOK: Start directly (first 2 sentences) by addressing their specific problem or project goal, demonstrating instant understanding. This is crucial for preview listings on Upwork/Freelancer.
-3. MY SOLUTION/APPROACH: Provide a clear, bulleted list (using '•') of 3 precise implementation steps tailored to this specific job post.
-4. PROOF / WHY ME: State 1-2 powerful differentiators or measurable results relevant to their project. Keep it natural, not salesy.
-5. OPEN-ENDED QUESTION: End with a single, simple, action-oriented closing question (e.g. "Do you have 5 minutes for a quick chat to discuss the dashboard layout?") to encourage them to reply. Do not ask generic questions like "When can we start?".
-6. FORMATTING: Use double line breaks \\n\\n between sections and bullet points for readability. Avoid markdown bold headers in the proposal text, keep it clean.`;
+CRITICAL STRUCTURAL WORKFLOW FOR THE "proposal" FIELD:
+
+STEP 1 — Extract before generating:
+Identify and store the following details from the job post:
+- Specific client complaints, frustrations, or bad experiences (e.g. "writers who write generic fluff content that does not add real value").
+- Explicit requests or mandatory inclusions (e.g., "please include writing samples, turnaround time, research approach").
+- Budget or price range mentioned (e.g. "$250").
+- Specific skill requirements and tone of the post.
+
+STEP 2 — Generate using extracted data:
+- OPENING: Start directly by addressing the client's specific pain point or frustration in the first 1-2 sentences. Do NOT use generic openings like "Your project caught my attention" or "I am a qualified professional". Address the exact issue immediately.
+- MANDATORY INCLUSIONS: Explicitly answer/provide every single item requested in the job description in the exact order they were requested.
+- PRICING: Reference realistic pricing aligned with their budget (or request clarification on scope if the budget range is too wide).
+- NO RESUME FORMATTING: Do NOT use resume-style bullet points (e.g., "→ Technical expertise: X") or structured templates. Write in natural, fluid paragraphs or short-line conversational form.
+- NO UNVERIFIABLE CLAIMS: Do NOT invent fake personal statistics like "10+ similar projects completed" or "20% faster turnaround than others". Only make claims that address the specific job scope.
+- COMMUNICATION MATCHING: Align communication updates to the client's preference (e.g. do not promise "daily updates" if the client mentions "async across time zones").
+- NO EMOJIS: Use zero emojis by default.
+
+STEP 3 — Self-Validation Check:
+Before outputting, execute this mental check: "Does this generated proposal explicitly address the key pain points and every single list item requested in the job description?" If anything is missing or generic, rewrite the proposal text to be fully specific before returning the final JSON.`;
 
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
