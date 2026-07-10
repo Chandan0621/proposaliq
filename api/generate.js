@@ -137,21 +137,43 @@ STEP 3 — Before finalizing, silently check: "Did I address every single explic
 ---`;
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const model = genAI.getGenerativeModel({
+        model: 'gemini-2.5-flash',
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 2048,
+          responseMimeType: 'application/json'   // Force Gemini to return raw JSON only
+        }
+      });
       const result = await model.generateContent({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+        contents: [{ parts: [{ text: prompt }] }]
       });
       const text = result.response.text().trim();
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return res.status(200).json({ success: true, source: 'gemini', data: JSON.parse(jsonMatch[0]) });
+
+      // Robust JSON extraction — handles raw JSON, ```json blocks, and ``` blocks
+      let parsed = null;
+      const strategies = [
+        () => { const m = text.match(/```json\s*([\s\S]*?)```/i); return m ? m[1].trim() : null; },
+        () => { const m = text.match(/```\s*([\s\S]*?)```/); return m ? m[1].trim() : null; },
+        () => { const m = text.match(/\{[\s\S]*\}/); return m ? m[0] : null; },
+        () => text
+      ];
+
+      for (const strategy of strategies) {
+        try {
+          const candidate = strategy();
+          if (candidate) { parsed = JSON.parse(candidate); break; }
+        } catch (_) { /* try next strategy */ }
+      }
+
+      if (parsed) {
+        return res.status(200).json({ success: true, source: 'gemini', data: parsed });
       } else {
-        console.error('No JSON match found in AI response:', text);
-        return res.status(200).json({ success: false, error: 'AI response parsing failed', rawResponse: text });
+        console.error('[ProposalIQ] No JSON match found in AI response. Raw text (first 500 chars):', text.substring(0, 500));
+        return res.status(200).json({ success: false, error: 'AI response parsing failed — Gemini returned non-JSON output', rawResponse: text.substring(0, 500) });
       }
     } catch (err) {
-      console.error('Gemini generateContent failed:', err);
+      console.error('[ProposalIQ] Gemini generateContent failed:', err);
       return res.status(200).json({ success: false, error: err.message, stack: err.stack });
     }
   }
