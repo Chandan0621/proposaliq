@@ -98,7 +98,7 @@ Return ONLY this JSON object — no markdown, no explanation:
         model: 'gemini-2.5-flash',
         generationConfig: {
           temperature: 0.8,
-          maxOutputTokens: 1500,
+          maxOutputTokens: 8192,
           responseMimeType: 'application/json'
         }
       });
