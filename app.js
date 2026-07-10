@@ -1172,6 +1172,7 @@ async function generateColdEmail() {
   const apiKey = getApiKey();
   let results = null;
 
+  try {
     const isPro = shouldCallBackend();
     if (isPro) {
       const responseData = await callBackendAI('coldemail', { prospect, company, industry, service, goal, tone });

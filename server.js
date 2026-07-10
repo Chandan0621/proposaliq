@@ -180,6 +180,10 @@ ${closes[tone] || closes.professional} What's the one thing that's most critical
   };
 }
 
+// ---- VERCEL BACKEND API FOR LOCAL TESTING ----
+const generateApi = require('./api/generate.js');
+app.post('/api/generate', generateApi);
+
 // ---- HEALTH CHECK ----
 app.get('/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
