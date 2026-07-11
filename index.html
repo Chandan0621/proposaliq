@@ -325,11 +325,17 @@
           <span class="btn-content" id="btnGenerateText">⚡ Generate Proposal</span>
         </button>
         <div class="proposal-output" id="proposalOutput" style="display:none;">
-          <div id="demoWarningBanner" style="display: none; background: linear-gradient(135deg, #d97706, #b45309); color: #fff; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-weight: 500; font-size: 13px; line-height: 1.5; border: 1px solid rgba(251, 191, 36, 0.2); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-            <div style="font-weight: bold; font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+          <div id="demoWarningBanner" style="display: none; background: linear-gradient(135deg, #d97706, #b45309); color: #fff; padding: 14px 16px; border-radius: 8px; margin-bottom: 16px; font-weight: 500; font-size: 13px; line-height: 1.5; border: 1px solid rgba(251, 191, 36, 0.2); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <div style="font-weight: bold; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
               <span>⚠️ Demo/Sample Proposal — not personalized</span>
             </div>
-            This is a pre-generated template. Connect your free Gemini API key using the <strong>⚙️ Connect AI</strong> button at the top to generate real, highly personalized AI proposals.
+            <div style="margin-bottom: 12px; color: rgba(255, 255, 255, 0.9);">
+              This is a pre-generated template. To generate real, highly personalized AI proposals, you have two quick free options:
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button id="bannerStartTrialBtn" style="background: #fff; color: #b45309; border: none; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">🔥 Start 7-Day Free Trial</button>
+              <button id="bannerConnectKeyBtn" style="background: rgba(255, 255, 255, 0.18); color: #fff; border: 1px solid rgba(255, 255, 255, 0.35); padding: 5px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.2s;">⚙️ Connect Free API Key</button>
+            </div>
           </div>
           <div class="output-header">
             <span id="outputLabelEl">📝 Your AI Proposal</span>

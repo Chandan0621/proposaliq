@@ -105,7 +105,18 @@ document.getElementById('clearApiKeyBtn').addEventListener('click', () => {
   updateAiStatus();
   showToast('Key removed. Running in Demo Mode.', 'info');
 });
-
+// ---- DEMO BANNER ACTIONS ----
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'bannerStartTrialBtn') {
+    e.preventDefault();
+    openUpgradeModal();
+  }
+  if (e.target && e.target.id === 'bannerConnectKeyBtn') {
+    e.preventDefault();
+    apiKeyInput.value = getApiKey();
+    settingsModal.classList.add('open');
+  }
+});
 // ---- UPGRADE MODAL ----
 const upgradeModal = document.getElementById('upgradeModal');
 
