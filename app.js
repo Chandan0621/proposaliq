@@ -23,7 +23,7 @@ function updateAiStatus() {
   } else {
     dot.className = 'ai-dot';
     text.textContent = 'Demo Mode (no API key needed)';
-    if (badge) { badge.textContent = '⚡ AI Ready'; badge.className = 'panel-badge'; }
+    if (badge) { badge.textContent = '⚡ Demo Mode'; badge.className = 'panel-badge demo'; }
   }
 }
 
@@ -117,6 +117,15 @@ document.addEventListener('click', (e) => {
     settingsModal.classList.add('open');
   }
 });
+
+// ---- COMING SOON NAV HANDLER ----
+document.querySelectorAll('.nav-item-soon').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    showToast('🔒 This feature is coming soon! Stay tuned.', 'info');
+  });
+});
+
 // ---- UPGRADE MODAL ----
 const upgradeModal = document.getElementById('upgradeModal');
 
@@ -308,7 +317,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
 
   // Clear previous warnings or error screens
   const demoBanner = document.getElementById('demoWarningBanner');
-  if (demoBanner) demoBanner.style.display = 'none';
+  if (demoBanner) demoBanner.classList.remove('visible');
 
   try {
     const isPro = shouldCallBackend();
@@ -321,15 +330,15 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
       
       document.getElementById('analysisBadge').textContent = '🤖 Gemini AI';
       document.getElementById('analysisBadge').className = 'panel-badge done';
-      if (demoBanner) demoBanner.style.display = 'none';
+      if (demoBanner) demoBanner.classList.remove('visible');
     } else {
       // Free/Guest users without connected key get Demo Mode (Simulation fallback)
       logApiCall('demo', 'No API key or Pro account. Triggering intentional Demo Mode.');
       await delay(1200);
       result = simulateAnalysis(jobPost, skill, exp, tone, platform);
       document.getElementById('analysisBadge').textContent = '⚡ Demo Mode';
-      document.getElementById('analysisBadge').className = 'panel-badge';
-      if (demoBanner) demoBanner.style.display = 'block';
+      document.getElementById('analysisBadge').className = 'panel-badge demo';
+      if (demoBanner) demoBanner.classList.add('visible');
       showToast('ℹ️ Running in Demo Mode. Connect AI or Upgrade to Pro for real AI proposals.', 'info');
     }
     renderResults(result);
