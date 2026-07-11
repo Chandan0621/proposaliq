@@ -2471,17 +2471,19 @@ body {
 }
 .tpl-editor-topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .tpl-topbar-btn {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff; padding: 7px 14px;
-  border-radius: 8px; font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all 0.2s; font-family: inherit;
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  color: #fff; padding: 8px 16px;
+  border-radius: 10px; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-sans);
 }
-.tpl-topbar-btn:hover { background: rgba(255,255,255,0.25); }
+.tpl-topbar-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3); transform: translateY(-1.5px); }
+.tpl-topbar-btn:active { transform: translateY(0) scale(0.98); }
 .tpl-topbar-btn.green { background: #10b981; border-color: #10b981; }
-.tpl-topbar-btn.green:hover { background: #059669; }
+.tpl-topbar-btn.green:hover { background: #059669; border-color: #059669; }
 .tpl-topbar-btn.red { background: rgba(239,68,68,0.3); border-color: #ef4444; }
-.tpl-topbar-btn.red:hover { background: #ef4444; }
+.tpl-topbar-btn.red:hover { background: #ef4444; border-color: #ef4444; }
 
 .tpl-editor-hint {
   background: #fffbeb; border-bottom: 1px solid #fde68a;
