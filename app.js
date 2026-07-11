@@ -218,6 +218,64 @@ function incrementGuestLimit() {
   }
 }
 
+// ---- LOGGING HELPER ----
+function logApiCall(status, details, isRateLimit = false) {
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    status: status,
+    details: details,
+    isRateLimit: isRateLimit
+  };
+
+  // Save in local history (limit to last 50 logs)
+  let logs = [];
+  try {
+    logs = JSON.parse(localStorage.getItem('proposaliq_api_logs') || '[]');
+  } catch (_) {}
+  logs.unshift(logEntry);
+  if (logs.length > 50) logs = logs.slice(0, 50);
+  localStorage.setItem('proposaliq_api_logs', JSON.stringify(logs));
+
+  // Console output
+  const prefix = isRateLimit ? '⚠️ [ProposalIQ Rate Limit]' : (status === 'success' ? '✅ [ProposalIQ Log]' : (status === 'failure' ? '🔴 [ProposalIQ Error]' : '📊 [ProposalIQ Log]'));
+  console.log(`${prefix} ${status.toUpperCase()}: ${details}`);
+}
+
+// ---- RETRY WRAPPER ----
+async function callAIWithRetry(jobPost, skill, exp, tone, platform, apiKey, isPro, retries = 2, delayMs = 2500) {
+  for (let attempt = 1; attempt <= retries + 1; attempt++) {
+    try {
+      logApiCall('attempt', `Proposal generation attempt ${attempt}/${retries + 1} (${isPro ? 'Pro Backend' : 'Local API Key'})`);
+      let result;
+      if (isPro) {
+        const responseData = await callBackendAI('proposal', { jobPost, skill, exp, tone, platform });
+        if (responseData && responseData.success) {
+          result = responseData.data;
+        } else {
+          throw new Error(responseData?.error || 'Failed to generate proposal.');
+        }
+      } else {
+        result = await callGeminiAI(jobPost, skill, exp, tone, platform, apiKey);
+      }
+      logApiCall('success', 'Proposal generated successfully.');
+      return result;
+    } catch (err) {
+      const errMessage = err.message || '';
+      const isRateLimit = errMessage.toLowerCase().includes('429') || errMessage.toLowerCase().includes('quota') || errMessage.toLowerCase().includes('limit') || errMessage.toLowerCase().includes('exhausted');
+
+      logApiCall('failure', `Attempt ${attempt} failed: ${errMessage}`, isRateLimit);
+
+      if (attempt <= retries) {
+        const backoff = delayMs * attempt; // Exponential backoff
+        console.warn(`[ProposalIQ] Transient error detected. Retrying in ${backoff / 1000}s...`);
+        await delay(backoff);
+      } else {
+        throw err; // Re-throw the error on the final attempt
+      }
+    }
+  }
+}
+
 // ---- GENERATE PROPOSAL ----
 document.getElementById('generateBtn').addEventListener('click', async () => {
   if (enforceGuestLimit()) return;
@@ -231,32 +289,36 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
 
   setLoadingState(true);
 
+  // Clear previous error styles
+  const badge = document.getElementById('analysisBadge');
+  if (badge) {
+    badge.className = 'panel-badge';
+  }
+
+  // Clear previous warnings or error screens
+  const demoBanner = document.getElementById('demoWarningBanner');
+  if (demoBanner) demoBanner.style.display = 'none';
+
   try {
     const isPro = shouldCallBackend();
     const apiKey = getApiKey();
     let result;
 
-    if (isPro) {
-      // Pro Users bypass local API key requirement and call backend using owner's API key
-      const responseData = await callBackendAI('proposal', { jobPost, skill, exp, tone, platform });
-      if (responseData && responseData.success) {
-        result = responseData.data;
-        document.getElementById('analysisBadge').textContent = '🤖 Gemini AI';
-        document.getElementById('analysisBadge').className = 'panel-badge done';
-      } else {
-        throw new Error(responseData?.error || 'Failed to generate proposal. Please try again.');
-      }
-    } else if (apiKey) {
-      // Free/Guest users with local connected key use their key
-      result = await callGeminiAI(jobPost, skill, exp, tone, platform, apiKey);
+    if (isPro || apiKey) {
+      // Call with retry - do not silently fall back to Demo Mode
+      result = await callAIWithRetry(jobPost, skill, exp, tone, platform, apiKey, isPro);
+      
       document.getElementById('analysisBadge').textContent = '🤖 Gemini AI';
       document.getElementById('analysisBadge').className = 'panel-badge done';
+      if (demoBanner) demoBanner.style.display = 'none';
     } else {
       // Free/Guest users without connected key get Demo Mode (Simulation fallback)
+      logApiCall('demo', 'No API key or Pro account. Triggering intentional Demo Mode.');
       await delay(1200);
       result = simulateAnalysis(jobPost, skill, exp, tone, platform);
       document.getElementById('analysisBadge').textContent = '⚡ Demo Mode';
       document.getElementById('analysisBadge').className = 'panel-badge';
+      if (demoBanner) demoBanner.style.display = 'block';
       showToast('ℹ️ Running in Demo Mode. Connect AI or Upgrade to Pro for real AI proposals.', 'info');
     }
     renderResults(result);
@@ -275,15 +337,39 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
 
     const errMsg = `❌ API Error [${errCode}]${errHint}: ${err.message}`;
     showToast(errMsg, 'error');
-    console.warn('🔴 [ProposalIQ] Falling back to Demo Mode after error:', err.message);
 
     // Show error inline above output panel too
-    const badge = document.getElementById('analysisBadge');
-    if (badge) { badge.textContent = `⚠️ Error ${errCode}`; badge.className = 'panel-badge error'; }
+    if (badge) {
+      badge.textContent = `⚠️ Error ${errCode}`;
+      badge.className = 'panel-badge error';
+    }
 
-    const result = simulateAnalysis(jobPost, skill, exp, tone, platform);
-    document.getElementById('analysisBadge').textContent = '⚡ Demo Mode';
-    renderResults(result);
+    // Render a nice error container with a retry button instead of fallback
+    const outputEl = document.getElementById('proposalOutput');
+    const outputText = document.getElementById('outputText');
+    outputEl.style.display = 'block';
+
+    outputText.innerHTML = `
+      <div class="error-container" style="padding: 24px; text-align: center; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; margin: 16px 0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <div style="font-size: 24px; margin-bottom: 12px;">⚠️</div>
+        <div style="font-size: 18px; font-weight: bold; color: #ef4444; margin-bottom: 8px;">AI Generation Failed</div>
+        <div style="font-size: 14px; color: #e5e7eb; margin-bottom: 16px; max-width: 450px; margin-left: auto; margin-right: auto;">
+          It looks like the request failed. This is often caused by temporary rate limits or connection issues. Please wait a moment and try again.
+        </div>
+        <div style="font-size: 12px; color: #9ca3af; font-family: monospace; background: rgba(0, 0, 0, 0.2); padding: 8px 12px; border-radius: 6px; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; overflow-x: auto; white-space: pre-wrap; word-break: break-all;">
+          Details: [${errCode}] ${err.message}
+        </div>
+        <button id="retryGenerateBtn" class="btn-generate" style="margin: 0 auto; width: auto; min-width: 180px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span>🔄 Retry Generation</span>
+        </button>
+      </div>
+    `;
+
+    // Hook up retry button action
+    document.getElementById('retryGenerateBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('generateBtn').click();
+    });
   } finally {
     setLoadingState(false);
   }
@@ -477,6 +563,21 @@ function simulateAnalysis(jobPost, skill, exp, tone, platform) {
   const t = jobPost.toLowerCase();
   const words = jobPost.split(/\s+/).filter(w => w.length > 4);
 
+  // Clean up experience level and skill category to avoid literal placeholder leaks
+  let cleanExp = 'experienced';
+  if (exp.toLowerCase().includes('beginner')) cleanExp = 'entry-level';
+  else if (exp.toLowerCase().includes('intermediate')) cleanExp = 'intermediate';
+  else if (exp.toLowerCase().includes('expert')) cleanExp = 'expert';
+  else if (exp.toLowerCase().includes('senior')) cleanExp = 'senior-level';
+
+  let cleanExpWhy = 'Strong';
+  if (exp.toLowerCase().includes('beginner')) cleanExpWhy = 'Fresh, hands-on';
+  else if (exp.toLowerCase().includes('intermediate')) cleanExpWhy = 'Solid';
+  else if (exp.toLowerCase().includes('expert')) cleanExpWhy = 'Expert-level';
+  else if (exp.toLowerCase().includes('senior')) cleanExpWhy = 'Extensive';
+
+  const skillCategoryClean = skill && skill !== 'General' ? skill : 'freelance services';
+
   // ---- SCORES ----
   const urgencyScore = t.includes('asap')||t.includes('urgent')||t.includes('immediately') ? 88
     : t.includes('soon')||t.includes('quickly') ? 65 : Math.floor(Math.random()*30)+20;
@@ -510,9 +611,9 @@ function simulateAnalysis(jobPost, skill, exp, tone, platform) {
     professional: [
       `Your project caught my attention for exactly the right reasons — this is precisely the kind of work I specialize in.`,
       `After reading your requirements carefully, I can see this project needs someone who understands both the technical side and the business goal.`,
-      `This project aligns perfectly with my background in ${skill}. Let me explain how I'd approach it.`,
+      `This project aligns perfectly with my background in ${skillCategoryClean}. Let me explain how I'd approach it.`,
       `Your job description is well-structured and it's clear you know exactly what you want — which makes my job easier.`,
-      `Having worked on similar ${skill} projects on ${platform}, I understand the challenges you're facing and how to solve them efficiently.`,
+      `Having worked on similar ${skillCategoryClean} projects on ${platform}, I understand the challenges you're facing and how to solve them efficiently.`,
       `The scope of work you've described is something I've handled multiple times. Here's how I'd deliver results for you.`,
       `What you're describing in this project is not just a technical challenge — it's a business opportunity. Let me show you how I'd approach it.`,
     ],
@@ -545,14 +646,14 @@ function simulateAnalysis(jobPost, skill, exp, tone, platform) {
   // ---- BODY TEMPLATES ----
   const bodies = [
     {
-      opening: `Here's my ${exp||'experienced'} take on your project:`,
+      opening: `Here's my ${cleanExp} take on your project:`,
       bullets: [
         `→ Start with a thorough discovery session to fully understand your goals`,
         `→ Build iteratively with your feedback at every step`,
         `→ Deliver clean, documented, and scalable output`,
       ],
       why: [
-        `✓ ${exp||'Strong'} hands-on experience in ${skill||'this domain'}`,
+        `✓ ${cleanExpWhy} hands-on experience in ${skillCategoryClean}`,
         `✓ Consistent 5-star delivery record on ${platform}`,
         `✓ Available for quick turnaround and daily updates`,
       ]
@@ -565,7 +666,7 @@ function simulateAnalysis(jobPost, skill, exp, tone, platform) {
         `📌 Phase 3: Refinements until you're 100% satisfied`,
       ],
       why: [
-        `⚡ Proven track record with ${skill||'similar'} projects`,
+        `⚡ Proven track record with ${skillCategoryClean} projects`,
         `⚡ I communicate proactively — no chasing required`,
         `⚡ Quality output with zero compromise on deadlines`,
       ]
@@ -573,13 +674,13 @@ function simulateAnalysis(jobPost, skill, exp, tone, platform) {
     {
       opening: `Why I'm the right fit for this:`,
       bullets: [
-        `• I've completed 10+ similar ${skill||'projects'} in the past 12 months`,
+        `• I've completed 10+ similar ${skillCategoryClean} projects in the past 12 months`,
         `• My average delivery time is 20% faster than the deadline`,
         `• You'll get daily progress updates, not radio silence`,
       ],
       why: [
-        `→ Technical expertise: ${skill||'Relevant domain knowledge'}`,
-        `→ Experience level: ${exp||'Solid and proven'}`,
+        `→ Technical expertise: ${skillCategoryClean}`,
+        `→ Experience level: ${cleanExp}`,
         `→ Platform trust: Verified ${platform} professional`,
       ]
     },
@@ -591,7 +692,7 @@ function simulateAnalysis(jobPost, skill, exp, tone, platform) {
         `Step 3 ✅ Execute with regular check-ins and zero surprises`,
       ],
       why: [
-        `🎯 Specialized in ${skill||'this field'} — not a generalist`,
+        `🎯 Specialized in ${skillCategoryClean} — not a generalist`,
         `🎯 On-time delivery is non-negotiable for me`,
         `🎯 Full revisions included until you love the result`,
       ]
@@ -627,7 +728,7 @@ function simulateAnalysis(jobPost, skill, exp, tone, platform) {
   };
 
   // ---- INSIGHTS (Dynamic based on job post) ----
-  const skillRef = skill || 'this type of work';
+  const skillRef = skillCategoryClean;
   const allPainPoints = [
     `Finding a ${skillRef} expert who communicates consistently`,
     `Previous freelancers delivered late or below expectations`,

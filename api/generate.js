@@ -128,7 +128,12 @@ Return ONLY this JSON object — no markdown, no explanation:
       return res.status(200).json({ success: true, source: 'gemini', data: parsed });
 
     } catch (err) {
-      console.error('[ProposalIQ] Gemini call failed:', err.message);
+      const isRateLimit = err.message.toLowerCase().includes('429') || err.message.toLowerCase().includes('quota') || err.message.toLowerCase().includes('limit');
+      if (isRateLimit) {
+        console.error('⚠️ [ProposalIQ Rate Limit Alert] Gemini call failed due to Rate Limit (429/Quota exceeded):', err.message);
+      } else {
+        console.error('🔴 [ProposalIQ Server Error] Gemini call failed:', err.message, '| Stack:', err.stack);
+      }
       return res.status(200).json({ success: false, error: err.message });
     }
   }
