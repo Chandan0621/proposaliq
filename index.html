@@ -250,23 +250,137 @@
   <main class="content-area">
 
     <!-- HERO -->
-    <section class="hero-section">
-      <div class="hero-inner">
-        <div class="hero-eyebrow">✦ Powered by Gemini AI</div>
-        <h1 class="hero-heading">
-          Write Proposals That<br/><span class="gradient-text">Get Replies</span>
-        </h1>
-        <p class="hero-sub">Generate proposals, analyze jobs, detect scams, and create professional follow-ups in minutes.</p>
-        <div class="hero-ctas">
-          <button class="hero-cta-primary" onclick="switchFeatureTab('proposalGen'); document.getElementById('jobPost').focus();">⚡ Generate Proposal</button>
-          <button class="hero-cta-secondary" onclick="switchFeatureTab('proposalGen'); document.getElementById('jobPost').value='Looking for a skilled web developer to build a modern e-commerce website using React and Node.js. Budget: $800–1200. Timeline: 3 weeks. Must have portfolio.'; document.getElementById('generateBtn').click();">▶ Try Demo</button>
+    <section class="hero-section" id="heroSection">
+      <!-- Ambient background orbs -->
+      <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+
+      <div class="hero-layout">
+
+        <!-- LEFT: Copy -->
+        <div class="hero-copy">
+          <div class="hero-eyebrow">
+            <span class="hero-eyebrow-dot"></span>
+            Powered by Gemini AI
+          </div>
+
+          <h1 class="hero-heading">
+            Write Proposals<br/>
+            That <span class="gradient-text hero-gradient-animated">Get Replies</span>
+          </h1>
+
+          <p class="hero-sub">
+            Analyze any job post in seconds — get reply chance scores, scam detection, client personality insights, and a personalized AI proposal ready to send.
+          </p>
+
+          <div class="hero-ctas">
+            <button class="hero-cta-primary" onclick="switchFeatureTab('proposalGen'); document.getElementById('jobPost').focus();" aria-label="Generate a proposal now">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Generate Proposal
+            </button>
+            <button class="hero-cta-secondary" onclick="switchFeatureTab('proposalGen'); document.getElementById('jobPost').value='Looking for a skilled web developer to build a modern e-commerce website using React and Node.js. Budget: \$800–1200. Timeline: 3 weeks. Must have portfolio.'; document.getElementById('generateBtn').click();" aria-label="Try a live demo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Try Live Demo
+            </button>
+          </div>
+
+          <div class="hero-shortcuts">
+            <span class="hero-shortcut-label">Quick tools:</span>
+            <button class="hero-shortcut-btn" onclick="switchFeatureTab('fiverrRequest')">🛒 Fiverr Reply</button>
+            <button class="hero-shortcut-btn" onclick="switchFeatureTab('clientMsg')">💬 Client Message</button>
+            <button class="hero-shortcut-btn" onclick="switchFeatureTab('coldEmail')">✉️ Cold Email</button>
+            <button class="hero-shortcut-btn" onclick="switchFeatureTab('followUp')">🔁 Follow-up</button>
+          </div>
         </div>
-        <div class="hero-shortcuts">
-          <span class="hero-shortcut-label">Quick Actions:</span>
-          <button class="hero-shortcut-btn" onclick="switchFeatureTab('fiverrRequest')">🛒 Fiverr Request</button>
-          <button class="hero-shortcut-btn" onclick="switchFeatureTab('clientMsg')">💬 Client Message</button>
-          <button class="hero-shortcut-btn" onclick="switchFeatureTab('coldEmail')">✉️ Cold Email</button>
+
+        <!-- RIGHT: Animated dashboard preview -->
+        <div class="hero-preview" aria-label="Dashboard preview" role="img">
+
+          <!-- Floating AI cards -->
+          <div class="hero-float-card hero-float-card-1">
+            <span class="hero-float-icon">💬</span>
+            <div>
+              <div class="hero-float-label">Reply Chance</div>
+              <div class="hero-float-val hero-float-green">84%</div>
+            </div>
+          </div>
+
+          <div class="hero-float-card hero-float-card-2">
+            <span class="hero-float-icon">🛡️</span>
+            <div>
+              <div class="hero-float-label">Scam Risk</div>
+              <div class="hero-float-val hero-float-green">Low</div>
+            </div>
+          </div>
+
+          <div class="hero-float-card hero-float-card-3">
+            <span class="hero-float-icon">⚡</span>
+            <div>
+              <div class="hero-float-label">AI Analysis</div>
+              <div class="hero-float-val hero-float-purple">Ready</div>
+            </div>
+          </div>
+
+          <!-- Main dashboard card -->
+          <div class="hero-dash-card">
+            <div class="hero-dash-header">
+              <div class="hero-dash-title">
+                <span class="hero-dash-dot"></span>
+                AI Job Analysis
+              </div>
+              <span class="hero-dash-badge">Live Preview</span>
+            </div>
+
+            <!-- Metrics row -->
+            <div class="hero-metrics">
+              <div class="hero-metric">
+                <div class="hero-metric-label">Reply Chance</div>
+                <div class="hero-metric-bar">
+                  <div class="hero-metric-fill hero-metric-fill-purple" style="width: 84%"></div>
+                </div>
+                <div class="hero-metric-val">84%</div>
+              </div>
+              <div class="hero-metric">
+                <div class="hero-metric-label">Budget Score</div>
+                <div class="hero-metric-bar">
+                  <div class="hero-metric-fill hero-metric-fill-blue" style="width: 72%"></div>
+                </div>
+                <div class="hero-metric-val">72%</div>
+              </div>
+              <div class="hero-metric">
+                <div class="hero-metric-label">Ghosting Risk</div>
+                <div class="hero-metric-bar">
+                  <div class="hero-metric-fill hero-metric-fill-green" style="width: 22%"></div>
+                </div>
+                <div class="hero-metric-val">Low</div>
+              </div>
+              <div class="hero-metric">
+                <div class="hero-metric-label">Scam Risk</div>
+                <div class="hero-metric-bar">
+                  <div class="hero-metric-fill hero-metric-fill-green" style="width: 8%"></div>
+                </div>
+                <div class="hero-metric-val">Low</div>
+              </div>
+            </div>
+
+            <!-- Proposal preview -->
+            <div class="hero-proposal-preview">
+              <div class="hero-proposal-label">✨ Generated Proposal</div>
+              <div class="hero-proposal-lines">
+                <div class="hero-line hero-line-long hero-line-anim" style="animation-delay:0s"></div>
+                <div class="hero-line hero-line-med hero-line-anim" style="animation-delay:0.15s"></div>
+                <div class="hero-line hero-line-long hero-line-anim" style="animation-delay:0.3s"></div>
+                <div class="hero-line hero-line-short hero-line-anim" style="animation-delay:0.45s"></div>
+                <div class="hero-line hero-line-med hero-line-anim" style="animation-delay:0.6s"></div>
+              </div>
+              <div class="hero-proposal-actions">
+                <span class="hero-action-chip">📋 Copy</span>
+                <span class="hero-action-chip">💾 Save</span>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
     </section>
 
