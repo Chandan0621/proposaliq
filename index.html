@@ -17,6 +17,9 @@
 <meta name="twitter:description" content="Free AI tool for freelancers. Proposals, cold emails, client replies & more."/>
 <meta name="twitter:image" content="https://proposaliqai.com/og-preview.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="preconnect" href="https://api.dicebear.com"/>
+<link rel="preconnect" href="https://generativelanguage.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 <!-- Google Identity Services -->
@@ -53,10 +56,10 @@
     </div>
     <div class="auth-social-proof">
       <div class="auth-avatars">
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=a1" alt=""/>
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=b2" alt=""/>
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=c3" alt=""/>
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=d4" alt=""/>
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=a1" alt="Freelancer profile avatar A" loading="lazy"/>
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=b2" alt="Freelancer profile avatar B" loading="lazy"/>
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=c3" alt="Freelancer profile avatar C" loading="lazy"/>
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=d4" alt="Freelancer profile avatar D" loading="lazy"/>
       </div>
       <span>AI-Powered Proposal Intelligence for freelancers worldwide</span>
     </div>
@@ -268,8 +271,8 @@
           <button class="overflow-item" id="langToggleBtn">🌐 Switch to हिंदी</button>
         </div>
       </div>
-      <div class="user-avatar" id="userAvatarMenu">
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=proposaliq" alt="User" id="headerAvatar"/>
+      <div class="user-avatar" id="userAvatarMenu" aria-label="User profile menu" aria-haspopup="menu" aria-expanded="false">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=proposaliq" alt="User Profile Avatar" id="headerAvatar" loading="lazy"/>
         <div class="user-info">
           <span class="user-name" id="headerUserName">Guest</span>
           <span class="user-plan" id="headerUserPlan">Free Demo</span>
