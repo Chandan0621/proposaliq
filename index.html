@@ -794,15 +794,94 @@
           <span class="panel-badge loading" id="analysisBadge">Waiting...</span>
         </div>
         <div class="analytics-grid">
-          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">💬</span><span class="ai-card-label" id="cardLabelReply">Reply Chance</span></div><div class="ai-card-value" id="val-reply">—</div><div class="progress-bar"><div class="progress-fill purple" id="prog-reply" style="width:0%"></div></div></div>
-          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">🧠</span><span class="ai-card-label" id="cardLabelClient">Client Personality</span></div><div class="ai-card-value sm" id="val-client">—</div></div>
-          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">⏱️</span><span class="ai-card-label" id="cardLabelUrgency">Urgency Level</span></div><div class="ai-card-value" id="val-urgency">—</div><div class="progress-bar"><div class="progress-fill blue" id="prog-urgency" style="width:0%"></div></div></div>
-          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">💵</span><span class="ai-card-label" id="cardLabelBudget">Budget Seriousness</span></div><div class="ai-card-value" id="val-budget">—</div><div class="progress-bar"><div class="progress-fill green" id="prog-budget" style="width:0%"></div></div></div>
-          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">👻</span><span class="ai-card-label" id="cardLabelGhost">Ghosting Risk</span></div><div class="ai-card-value" id="val-ghost">—</div><div class="progress-bar"><div class="progress-fill orange" id="prog-ghost" style="width:0%"></div></div></div>
-          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">🛡️</span><span class="ai-card-label" id="cardLabelScam">Scam Risk</span></div><div class="ai-card-value" id="val-scam">—</div><div class="progress-bar"><div class="progress-fill red" id="prog-scam" style="width:0%"></div></div></div>
-          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">✅</span><span class="ai-card-label" id="cardLabelTrust">Trust Level</span></div><div class="ai-card-value" id="val-trust">—</div><div class="progress-bar"><div class="progress-fill purple" id="prog-trust" style="width:0%"></div></div></div>
-          <div class="ai-card"><div class="ai-card-top"><span class="ai-card-icon">📈</span><span class="ai-card-label" id="cardLabelPrice">Pricing Confidence</span></div><div class="ai-card-value" id="val-price">—</div><div class="progress-bar"><div class="progress-fill green" id="prog-price" style="width:0%"></div></div></div>
-          <div class="ai-card wide"><div class="ai-card-top"><span class="ai-card-icon">🎯</span><span class="ai-card-label" id="cardLabelStrategy">Recommended Strategy</span></div><div class="ai-card-strategy" id="val-strategy">Generate a proposal to see the recommended winning strategy.</div></div>
+          <div class="ai-card">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelReply">Proposal Score</span>
+            </div>
+            <div class="ai-card-value" id="val-reply">—</div>
+            <div class="progress-bar"><div class="progress-fill purple" id="prog-reply" style="width:0%"></div></div>
+          </div>
+          <div class="ai-card">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelScam">Scam Risk</span>
+            </div>
+            <div class="ai-card-value" id="val-scam">—</div>
+            <div class="progress-bar"><div class="progress-fill red" id="prog-scam" style="width:0%"></div></div>
+          </div>
+          <div class="ai-card">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelClient">Client Intent</span>
+            </div>
+            <div class="ai-card-value sm" id="val-client">—</div>
+          </div>
+          <div class="ai-card">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelBudget">Budget Match</span>
+            </div>
+            <div class="ai-card-value" id="val-budget">—</div>
+            <div class="progress-bar"><div class="progress-fill green" id="prog-budget" style="width:0%"></div></div>
+          </div>
+          <div class="ai-card">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelTrust">Required Skills</span>
+            </div>
+            <div class="ai-card-value" id="val-trust">—</div>
+            <div class="progress-bar"><div class="progress-fill purple" id="prog-trust" style="width:0%"></div></div>
+          </div>
+          <div class="ai-card">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelUrgency">Suggested Tone</span>
+            </div>
+            <div class="ai-card-value" id="val-urgency">—</div>
+            <div class="progress-bar"><div class="progress-fill blue" id="prog-urgency" style="width:0%"></div></div>
+          </div>
+          <div class="ai-card">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelPrice">Proposal Quality</span>
+            </div>
+            <div class="ai-card-value" id="val-price">—</div>
+            <div class="progress-bar"><div class="progress-fill green" id="prog-price" style="width:0%"></div></div>
+          </div>
+          <div class="ai-card">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelGhost">Ghosting Risk</span>
+            </div>
+            <div class="ai-card-value" id="val-ghost">—</div>
+            <div class="progress-bar"><div class="progress-fill orange" id="prog-ghost" style="width:0%"></div></div>
+          </div>
+          <div class="ai-card wide">
+            <div class="ai-card-top">
+              <span class="ai-card-icon">
+                <svg class="ai-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </span>
+              <span class="ai-card-label" id="cardLabelStrategy">Recommended Strategy</span>
+            </div>
+            <div class="ai-card-strategy" id="val-strategy">Generate a proposal to see the recommended winning strategy.</div>
+          </div>
         </div>
       </aside>
     </div>

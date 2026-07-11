@@ -1363,7 +1363,16 @@ body {
   gap: 8px;
   margin-bottom: 8px;
 }
-.ai-card-icon { font-size: 15px; }
+.ai-card-icon { font-size: 15px; display: flex; align-items: center; justify-content: center; color: var(--purple); }
+.ai-svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  stroke-width: 2.2px;
+  vertical-align: middle;
+}
+
 .ai-card-label { 
   font-size: 11px; 
   font-weight: 700; 
