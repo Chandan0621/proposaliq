@@ -18,25 +18,45 @@ textarea:focus:not(:focus-visible) {
 }
 
 :root {
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Color Tokens */
   --purple: #7c3aed;
   --purple-light: #a855f7;
   --blue: #3b82f6;
   --blue-dark: #1d4ed8;
   --sidebar-bg: #0f0b1e;
-  --sidebar-border: rgba(124,58,237,0.18);
+  --sidebar-border: rgba(124, 58, 237, 0.18);
   --text-primary: #1a1523;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --bg: #f4f3f8;
+  --text-secondary: #4b4857; /* Deep Slate Gray (contrast ratio > 6:1) */
+  --text-muted: #6b7280;     /* Slate Gray (contrast ratio > 4.5:1) */
+  --bg: #f5f4fa;
   --card-bg: #ffffff;
-  --border: rgba(0,0,0,0.06);
-  --radius: 14px;
-  --radius-sm: 8px;
-  --shadow: 0 2px 20px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 40px rgba(124,58,237,0.12);
+  --border: rgba(0, 0, 0, 0.06);
+  
+  /* 8px Spacing System */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  
+  /* Border Radius Tokens (16-20px range) */
+  --radius-lg: 20px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  
+  /* Consistent Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 20px 40px -15px rgba(124, 58, 237, 0.08), 0 1px 4px rgba(0, 0, 0, 0.02);
+  
+  /* Component Sizing */
   --sidebar-w: 240px;
   --header-h: 64px;
-  --transition: 0.2s ease;
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   --nav-item-h: 40px;
 }
 
