@@ -27,9 +27,25 @@ function updateAiStatus() {
   }
 }
 
-// ---- SIDEBAR TOGGLE ----
+// ---- SIDEBAR TOGGLE & COLLAPSE ----
 const sidebar = document.getElementById('sidebar');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
+const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+
+// Restore collapse state on load
+if (sidebar && localStorage.getItem('sidebar-collapsed') === 'true') {
+  sidebar.classList.add('collapsed');
+}
+
+if (sidebarCollapseBtn) {
+  sidebarCollapseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebar.classList.toggle('collapsed');
+    localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
+    window.dispatchEvent(new Event('resize'));
+  });
+}
+
 document.getElementById('hamburgerBtn').addEventListener('click', () => {
   sidebar.classList.toggle('open');
   sidebarOverlay.classList.toggle('open');

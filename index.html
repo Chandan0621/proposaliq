@@ -164,22 +164,62 @@
   <div class="sidebar-logo">
     <div class="logo-icon">IQ</div>
     <span class="logo-text">ProposalIQ</span>
+    <span class="logo-version">v1.1</span>
+    <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse Sidebar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Main</div>
-    <a href="#" class="nav-item active" data-tab="proposalGen" aria-label="Dashboard"><span class="nav-icon">📊</span> Dashboard</a>
-    <a href="#" class="nav-item" data-tab="proposalGen" aria-label="Job Analyzer"><span class="nav-icon">🔍</span> Job Analyzer</a>
-    <a href="#" class="nav-item" data-tab="proposalGen" aria-label="Proposal Generator"><span class="nav-icon">✨</span> Proposal Generator</a>
-    <a href="#" class="nav-item" data-tab="fiverrRequest" aria-label="Fiverr Buyer Request"><span class="nav-icon">🛒</span> Fiverr Buyer Request</a>
-    <a href="#" class="nav-item" data-tab="clientMsg" aria-label="Client Message Writer"><span class="nav-icon">💬</span> Client Message Writer</a>
-    <a href="#" class="nav-item" data-tab="followUp" aria-label="Follow-up Generator"><span class="nav-icon">🔁</span> Follow-up Generator</a>
-    <a href="#" class="nav-item" data-tab="coldEmail" aria-label="Cold Email Generator"><span class="nav-icon">✉️</span> Cold Email Generator</a>
+    <a href="#" class="nav-item active" data-tab="proposalGen" aria-label="Dashboard">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+      Dashboard
+    </a>
+    <a href="#" class="nav-item" data-tab="proposalGen" aria-label="Job Analyzer">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span>
+      Job Analyzer
+    </a>
+    <a href="#" class="nav-item" data-tab="proposalGen" aria-label="Proposal Generator">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5z"/><path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z"/></svg></span>
+      Proposal Generator
+    </a>
+    <a href="#" class="nav-item" data-tab="fiverrRequest" aria-label="Fiverr Buyer Request">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+      Fiverr Buyer Request
+    </a>
+    <a href="#" class="nav-item" data-tab="clientMsg" aria-label="Client Message Writer">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+      Client Message Writer
+    </a>
+    <a href="#" class="nav-item" data-tab="followUp" aria-label="Follow-up Generator">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></span>
+      Follow-up Generator
+    </a>
+    <a href="#" class="nav-item" data-tab="coldEmail" aria-label="Cold Email Generator">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+      Cold Email Generator
+    </a>
     <div class="nav-section-label">Tools</div>
-    <a href="#" class="nav-item" data-tab="proposalGen" aria-label="Scam Detector"><span class="nav-icon">🛡️</span> Scam Detector</a>
-    <a href="#" class="nav-item" data-tab="proposalGen" aria-label="Price Advisor"><span class="nav-icon">💰</span> Price Advisor</a>
-    <a href="#" class="nav-item nav-item-soon" data-soon="true" aria-label="Saved Proposals – Coming Soon"><span class="nav-icon">🔖</span> Saved Proposals</a>
-    <a href="#" class="nav-item nav-item-soon" data-soon="true" aria-label="History – Coming Soon"><span class="nav-icon">📋</span> History</a>
-    <a href="https://chromewebstore.google.com/" target="_blank" class="nav-item" style="color: #10b981; font-weight: 700;" aria-label="Chrome Extension"><span class="nav-icon">🔌</span> Chrome Extension</a>
+    <a href="#" class="nav-item" data-tab="proposalGen" aria-label="Scam Detector">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+      Scam Detector
+    </a>
+    <a href="#" class="nav-item" data-tab="proposalGen" aria-label="Price Advisor">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+      Price Advisor
+    </a>
+    <a href="#" class="nav-item nav-item-soon" data-soon="true" aria-label="Saved Proposals – Coming Soon">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></span>
+      Saved Proposals
+    </a>
+    <a href="#" class="nav-item nav-item-soon" data-soon="true" aria-label="History – Coming Soon">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+      History
+    </a>
+    <a href="https://chromewebstore.google.com/" target="_blank" class="nav-item" style="color: #10b981; font-weight: 700;" aria-label="Chrome Extension">
+      <span class="nav-icon"><svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v6c0 1.66 1.34 3 3 3h6c1.66 0 3-1.34 3-3z"/><path d="M12 13v7M9 20h6"/></svg></span>
+      Chrome Extension
+    </a>
   </nav>
   <div class="sidebar-upgrade">
     <div class="upgrade-card">
