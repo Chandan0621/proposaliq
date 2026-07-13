@@ -542,7 +542,10 @@ async function callBackendAI(type, payload) {
       }
     }
 
-    const response = await fetch('/api/generate', {
+    // Auto-detect backend: use .php on Hostinger, otherwise Vercel /api/generate
+    const apiEndpoint = window._backendEndpoint || '/api/generate';
+
+    const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({ type, payload })

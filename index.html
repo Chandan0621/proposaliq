@@ -1000,6 +1000,22 @@
   </div>
 </div>
 
+<!-- Backend Auto-Detection: PHP on Hostinger, Node on Vercel -->
+<script>
+(function() {
+  // If PHP is available (Hostinger), use /api/generate.php
+  // Otherwise Vercel's /api/generate (Node.js) will be used
+  fetch('/api/generate.php', { method: 'OPTIONS' })
+    .then(function(r) {
+      if (r.ok || r.status === 200 || r.status === 405) {
+        window._backendEndpoint = '/api/generate.php';
+      }
+    })
+    .catch(function() {
+      // Vercel / default: keep /api/generate
+    });
+})();
+</script>
 <script src="firebase-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
